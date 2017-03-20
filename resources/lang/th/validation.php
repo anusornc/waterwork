@@ -148,6 +148,15 @@ return [
                     'password_confirmation'   => 'ยืนยันรหัสผ่าน',
                     'send_confirmation_email' => 'ส่งอีเมลยืนยันตัวตน',
                 ],
+
+                'customers' => [
+                    'citizen_id'    => 'เลขที่บัตรประชาชน',
+                    'firstname'     => 'ชื่อ',
+                    'lastname'      => 'นามสกุล',
+                    'occupation'    => 'อาชีพ',
+                    'workplace'     => 'สถานที่ทำงาน',
+                    'address'       => 'ที่อยู่',
+                ],
             ],
         ],
 

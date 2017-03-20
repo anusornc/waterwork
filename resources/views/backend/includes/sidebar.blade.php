@@ -38,12 +38,12 @@
             </li>
 
             <!-- My Append Sidebar Menu  -->
-            <li class="header">{{ trans('menus.backend.sidebar.register') }}</li>
+            <li class="header">{{ trans('menus.backend.sidebar.customers') }}</li>
 
-            <li class="{{ active_class(Active::checkUriPattern('admin/dashboard')) }} treeview">
+            <li class="{{ active_class(Active::checkUriPattern('admin/access/*')) }} treeview">
                 <a href="#">
                     <i class="fa fa-address-card-o"></i>
-                    <span>{{ trans('menus.backend.sidebar.dashboard') }}</span>
+                    <span>{{ trans('menus.backend.sidebar.register') }}</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
 
