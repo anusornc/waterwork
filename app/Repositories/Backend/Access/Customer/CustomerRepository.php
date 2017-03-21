@@ -2,8 +2,14 @@
 
 namespace App\Repositories\Backend\Access\Customer;
 
-use App\Repositories\BaseRepository;
 use App\Models\Access\Customer\Customer;
+use Illuminate\Support\Facades\DB;
+use App\Exceptions\GeneralException;
+use App\Repositories\BaseRepository;
+use Illuminate\Database\Eloquent\Model;
+use App\Events\Backend\Access\Customer\CustomerCreated;
+use App\Events\Backend\Access\Customer\CustomerDeleted;
+use App\Events\Backend\Access\Customer\CustomerUpdated;
 
 /**
  * Class CustomerRepository.
@@ -24,5 +30,71 @@ class CustomerRepository extends BaseRepository
                 'customers.firstname',
                 'customers.lastname',
             ]);
+    }
+
+    public function create(array $input)
+    {
+        
+        DB::transaction(function () use ($input) {
+            $customer = self::MODEL;
+            $customer = new $customer();
+            $customer->user_id = $input['user_id'];
+            $customer->citizen_id = $input['citizen_id'];
+            $customer->firstname = $input['firstname'];
+            $customer->lastname = $input['lastname'];
+            $customer->occupation = $input['occupation'];
+            $customer->workplace = $input['workplace'];
+            $customer->address = $input['address'];
+            
+
+            if ($customer->save()) {
+                event(new CustomerCreated($customer));
+                return true;
+            }
+
+            throw new GeneralException(trans('exceptions.backend.access.customers.create_error'));
+        });
+    }
+
+    public function update(Model $customer, array $input)
+    {
+
+        $customer->user_id = $input['user_id'];
+        $customer->citizen_id = $input['citizen_id'];
+        $customer->firstname = $input['firstname'];
+        $customer->lastname = $input['lastname'];
+        $customer->occupation = $input['occupation'];
+        $customer->workplace = $input['workplace'];
+        $customer->address = $input['address'];   
+        
+
+        DB::transaction(function () use ($customer, $input) {
+            if ($customer->save()) {
+                event(new CustomerUpdated($customer));
+                return true;
+            }
+
+            throw new GeneralException(trans('exceptions.backend.access.customers.update_error'));
+        });
+    }
+
+    public function delete(Model $customer)
+    {
+        
+
+        //Don't delete the role is there are users associated
+       /* if ($customer->users()->count() > 0) {
+            throw new GeneralException(trans('exceptions.backend.access.roles.has_users'));
+        }*/
+
+        DB::transaction(function () use ($customer) {
+
+            if ($customer->delete()) {
+                event(new CustomerDeleted($customer));
+                return true;
+            }
+
+            throw new GeneralException(trans('exceptions.backend.access.customers.delete_error'));
+        });
     }
 }

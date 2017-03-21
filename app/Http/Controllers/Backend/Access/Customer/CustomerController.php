@@ -6,6 +6,8 @@ use App\Models\Access\Customer\Customer;
 use App\Http\Controllers\Controller;
 use App\Repositories\Backend\Access\Customer\CustomerRepository;
 use App\Http\Requests\Backend\Access\Customer\ManageCustomerRequest;
+use App\Http\Requests\Backend\Access\Customer\StoreCustomerRequest;
+use App\Http\Requests\Backend\Access\Customer\UpdateCustomerRequest;
 
 /**
  * Class CustomerController.
@@ -48,9 +50,11 @@ class CustomerController extends Controller
      *
      * @return mixed
      */
-    public function store()
+    public function store(StoreCustomerRequest $request)
     {
+        $this->customers->create($request->all());
 
+        return redirect()->route('admin.access.customer.index')->withFlashSuccess(trans('alerts.backend.customers.created'));
     }
 
     /**
@@ -59,9 +63,10 @@ class CustomerController extends Controller
      *
      * @return mixed
      */
-    public function edit()
+    public function edit(Customer $customer, ManageCustomerRequest $request)
     {
-        
+        return view('backend.access.customers.edit')
+            ->withCustomer($customer);
     }
 
     /**
@@ -70,9 +75,11 @@ class CustomerController extends Controller
      *
      * @return mixed
      */
-    public function update()
+    public function update(Customer $customer, UpdateCustomerRequest $request)
     {
-        
+        $this->customers->update($customer, $request->all());
+
+        return redirect()->route('admin.access.customer.index')->withFlashSuccess(trans('alerts.backend.customers.updated'));
     }
 
     /**
@@ -81,8 +88,10 @@ class CustomerController extends Controller
      *
      * @return mixed
      */
-    public function destroy()
+    public function destroy(Customer $customer, ManageCustomerRequest $request)
     {
+        $this->customers->delete($customer);
 
+        return redirect()->route('admin.access.customer.index')->withFlashSuccess(trans('alerts.backend.customers.deleted'));
     }
 }

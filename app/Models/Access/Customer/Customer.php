@@ -20,7 +20,7 @@ class Customer extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'citizen_id', 'firstname','lastname','address'];
+    protected $fillable = ['user_id', 'citizen_id', 'firstname','lastname','occupation','workplace','address'];
 
     public function __construct(array $attributes = [])
     {

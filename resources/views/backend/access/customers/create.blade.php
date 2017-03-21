@@ -30,6 +30,14 @@
                     </div><!--col-lg-10-->
                 </div><!--form control-->
 
+                 <div class="form-group">
+                    {{ Form::label('user_id', trans('validation.attributes.backend.access.customers.user_id'), ['class' => 'col-lg-2 control-label']) }}
+
+                    <div class="col-lg-10">
+                        {{ Form::text('user_id', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.user_id')]) }}
+                    </div><!--col-lg-10-->
+                </div><!--form control-->
+
                 <div class="form-group">
                     {{ Form::label('firstname', trans('validation.attributes.backend.access.customers.firstname'), ['class' => 'col-lg-2 control-label']) }}
 

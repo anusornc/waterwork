@@ -150,6 +150,7 @@ return [
                 ],
 
                 'customers' => [
+                    'user_id'       => 'รหัสเข้าใช้งานระบบ',
                     'citizen_id'    => 'เลขที่บัตรประชาชน',
                     'firstname'     => 'ชื่อ',
                     'lastname'      => 'นามสกุล',
