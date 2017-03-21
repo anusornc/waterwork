@@ -31,34 +31,46 @@
                 </div><!--form control-->
 
                 <div class="form-group">
-                    {{ Form::label('associated-permissions', trans('validation.attributes.backend.access.customers.associated_permissions'), ['class' => 'col-lg-2 control-label']) }}
+                    {{ Form::label('firstname', trans('validation.attributes.backend.access.customers.firstname'), ['class' => 'col-lg-2 control-label']) }}
 
                     <div class="col-lg-10">
-                        {{ Form::select('associated-permissions', array('all' => trans('labels.general.all'), 'custom' => trans('labels.general.custom')), 'all', ['class' => 'form-control']) }}
+                        {{ Form::text('firstname', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.firstname')]) }}
+                    </div><!--col-lg-10-->
+                </div><!--form control-->    
+                
+                <div class="form-group">
+                    {{ Form::label('lastname', trans('validation.attributes.backend.access.customers.lastname'), ['class' => 'col-lg-2 control-label']) }}
 
-                        <div id="available-permissions" class="hidden mt-20">
-                            <div class="row">
-                                <div class="col-xs-12">
-                                    @if ($permissions->count())
-                                        @foreach ($permissions as $perm)
-                                            <input type="checkbox" citizen_id="permissions[{{ $perm->id }}]" value="{{ $perm->id }}" id="perm_{{ $perm->id }}" {{ is_array(old('permissions')) && in_array($perm->id, old('permissions')) ? 'checked' : '' }} /> <label for="perm_{{ $perm->id }}">{{ $perm->display_citizen_id }}</label><br/>
-                                        @endforeach
-                                    @else
-                                        <p>There are no available permissions.</p>
-                                    @endif
-                                </div><!--col-lg-6-->
-                            </div><!--row-->
-                        </div><!--available permissions-->
-                    </div><!--col-lg-3-->
-                </div><!--form control-->
+                    <div class="col-lg-10">
+                        {{ Form::text('lastname', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.lastname')]) }}
+                    </div><!--col-lg-10-->
+                </div><!--form control-->    
 
                 <div class="form-group">
-                    {{ Form::label('sort', trans('validation.attributes.backend.access.customers.sort'), ['class' => 'col-lg-2 control-label']) }}
+                    {{ Form::label('occupation', trans('validation.attributes.backend.access.customers.occupation'), ['class' => 'col-lg-2 control-label']) }}
 
                     <div class="col-lg-10">
-                        {{ Form::text('sort', ($customer_count+1), ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.sort')]) }}
+                        {{ Form::text('occupation', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.occupation')]) }}
                     </div><!--col-lg-10-->
-                </div><!--form control-->
+                </div><!--form control-->    
+
+                <div class="form-group">
+                    {{ Form::label('workplace', trans('validation.attributes.backend.access.customers.workplace'), ['class' => 'col-lg-2 control-label']) }}
+
+                    <div class="col-lg-10">
+                        {{ Form::text('workplace', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.workplace')]) }}
+                    </div><!--col-lg-10-->
+                </div><!--form control--> 
+
+                <div class="form-group">
+                    {{ Form::label('address', trans('validation.attributes.backend.access.customers.address'), ['class' => 'col-lg-2 control-label']) }}
+
+                    <div class="col-lg-10">
+                        {{ Form::textarea('address', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.address')]) }}
+                    </div><!--col-lg-10-->
+                </div><!--form control--> 
+
+
             </div><!-- /.box-body -->
         </div><!--box-->
 
