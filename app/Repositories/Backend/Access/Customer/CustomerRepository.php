@@ -38,13 +38,20 @@ class CustomerRepository extends BaseRepository
         DB::transaction(function () use ($input) {
             $customer = self::MODEL;
             $customer = new $customer();
-            $customer->user_id = $input['user_id'];
+
             $customer->citizen_id = $input['citizen_id'];
+            $customer->type_id = $input['type_id'];
+            $customer->title = $input['title'];
             $customer->firstname = $input['firstname'];
             $customer->lastname = $input['lastname'];
+            $customer->house_id = $input['hosue_id'];
+            $customer->tambon = $input['tambon'];
+            $customer->aumphur = $input['aumphur'];
+            $customer->province = $input['province'];
             $customer->occupation = $input['occupation'];
+            $customer->email = $input['email'];
             $customer->workplace = $input['workplace'];
-            $customer->address = $input['address'];
+            
             
 
             if ($customer->save()) {
@@ -59,14 +66,18 @@ class CustomerRepository extends BaseRepository
     public function update(Model $customer, array $input)
     {
 
-        $customer->user_id = $input['user_id'];
-        $customer->citizen_id = $input['citizen_id'];
-        $customer->firstname = $input['firstname'];
-        $customer->lastname = $input['lastname'];
-        $customer->occupation = $input['occupation'];
-        $customer->workplace = $input['workplace'];
-        $customer->address = $input['address'];   
-        
+            $customer->citizen_id = $input['citizen_id'];
+            $customer->type_id = $input['type_id'];
+            $customer->title = $input['title'];
+            $customer->firstname = $input['firstname'];
+            $customer->lastname = $input['lastname'];
+            $customer->house_id = $input['hosue_id'];
+            $customer->tambon = $input['tambon'];
+            $customer->aumphur = $input['aumphur'];
+            $customer->province = $input['province'];
+            $customer->occupation = $input['occupation'];
+            $customer->email = $input['email'];
+            $customer->workplace = $input['workplace'];
 
         DB::transaction(function () use ($customer, $input) {
             if ($customer->save()) {
