@@ -22,6 +22,7 @@
             </div><!-- /.box-header -->
 
             <div class="box-body">
+
                 <div class="form-group">
                     {{ Form::label('citizen_id', trans('validation.attributes.backend.access.customers.citizen_id'), ['class' => 'col-lg-2 control-label']) }}
 
@@ -31,10 +32,10 @@
                 </div><!--form control-->
 
                  <div class="form-group">
-                    {{ Form::label('user_id', trans('validation.attributes.backend.access.customers.user_id'), ['class' => 'col-lg-2 control-label']) }}
+                    {{ Form::label('title', trans('validation.attributes.backend.access.customers.title'), ['class' => 'col-lg-2 control-label']) }}
 
                     <div class="col-lg-10">
-                        {{ Form::text('user_id', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.user_id')]) }}
+                        {{ Form::text('title', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.title')]) }}
                     </div><!--col-lg-10-->
                 </div><!--form control-->
 
@@ -55,6 +56,38 @@
                 </div><!--form control-->    
 
                 <div class="form-group">
+                    {{ Form::label('house_id', trans('validation.attributes.backend.access.customers.house_id'), ['class' => 'col-lg-2 control-label']) }}
+
+                    <div class="col-lg-10">
+                        {{ Form::text('house_id', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.house_id')]) }}
+                    </div><!--col-lg-10-->
+                </div><!--form control-->    
+
+                <div class="form-group">
+                    {{ Form::label('tambon', trans('validation.attributes.backend.access.customers.tambon'), ['class' => 'col-lg-2 control-label']) }}
+
+                    <div class="col-lg-10">
+                        {{ Form::text('tambon', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.tambon')]) }}
+                    </div><!--col-lg-10-->
+                </div><!--form control-->
+
+                <div class="form-group">
+                    {{ Form::label('aumphur', trans('validation.attributes.backend.access.customers.aumphur'), ['class' => 'col-lg-2 control-label']) }}
+
+                    <div class="col-lg-10">
+                        {{ Form::text('aumphur', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.aumphur')]) }}
+                    </div><!--col-lg-10-->
+                </div><!--form control-->
+
+                <div class="form-group">
+                    {{ Form::label('province', trans('validation.attributes.backend.access.customers.province'), ['class' => 'col-lg-2 control-label']) }}
+
+                    <div class="col-lg-10">
+                        {{ Form::text('province', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.province')]) }}
+                    </div><!--col-lg-10-->
+                </div><!--form control-->
+
+                <div class="form-group">
                     {{ Form::label('occupation', trans('validation.attributes.backend.access.customers.occupation'), ['class' => 'col-lg-2 control-label']) }}
 
                     <div class="col-lg-10">
@@ -63,21 +96,20 @@
                 </div><!--form control-->    
 
                 <div class="form-group">
+                    {{ Form::label('email', trans('validation.attributes.backend.access.customers.email'), ['class' => 'col-lg-2 control-label']) }}
+
+                    <div class="col-lg-10">
+                        {{ Form::text('email', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.email')]) }}
+                    </div><!--col-lg-10-->
+                </div><!--form control--> 
+
+                <div class="form-group">
                     {{ Form::label('workplace', trans('validation.attributes.backend.access.customers.workplace'), ['class' => 'col-lg-2 control-label']) }}
 
                     <div class="col-lg-10">
                         {{ Form::text('workplace', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.workplace')]) }}
                     </div><!--col-lg-10-->
                 </div><!--form control--> 
-
-                <div class="form-group">
-                    {{ Form::label('address', trans('validation.attributes.backend.access.customers.address'), ['class' => 'col-lg-2 control-label']) }}
-
-                    <div class="col-lg-10">
-                        {{ Form::textarea('address', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.address')]) }}
-                    </div><!--col-lg-10-->
-                </div><!--form control--> 
-
                
             </div><!-- /.box-body -->
         </div><!--box-->
