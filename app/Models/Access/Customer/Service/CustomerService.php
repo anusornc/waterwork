@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Models\Access\Customer;
+namespace App\Models\Access\Customer\Service;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Access\Customer\Traits\Attribute\CustomerAttribute;
+use App\Models\Access\Customer\Service\Traits\Attribute\CustomerAttribute;
 
-class Customer extends Model
+class CustomerService extends Model
 {
-    use CustomerAttribute;
+    use CustomerServiceAttribute;
     /**
      * The database table used by the model.
      *
@@ -20,12 +20,12 @@ class Customer extends Model
      *
      * @var array
      */
-    protected $fillable = ['citizen_id','type_id','title','firstname','lastname','birthdate','house_id','tambon','aumphur','province','occupation','email','workplace'];
+    protected $fillable = [];
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->table = 'customers';
+        $this->table = 'customer_services';
     }
 
 }
