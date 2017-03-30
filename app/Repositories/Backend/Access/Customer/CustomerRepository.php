@@ -44,7 +44,7 @@ class CustomerRepository extends BaseRepository
             $customer->title = $input['title'];
             $customer->firstname = $input['firstname'];
             $customer->lastname = $input['lastname'];
-            $customer->house_id = $input['hosue_id'];
+            $customer->house_id = $input['house_id'];
             $customer->tambon = $input['tambon'];
             $customer->aumphur = $input['aumphur'];
             $customer->province = $input['province'];
@@ -71,7 +71,7 @@ class CustomerRepository extends BaseRepository
             $customer->title = $input['title'];
             $customer->firstname = $input['firstname'];
             $customer->lastname = $input['lastname'];
-            $customer->house_id = $input['hosue_id'];
+            $customer->house_id = $input['house_id'];
             $customer->tambon = $input['tambon'];
             $customer->aumphur = $input['aumphur'];
             $customer->province = $input['province'];

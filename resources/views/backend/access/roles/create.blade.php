@@ -46,11 +46,11 @@
                                     @else
                                         <p>There are no available permissions.</p>
                                     @endif
-                                </div><!--col-lg-6-->
+                                </div><!--col-xs-12-->
                             </div><!--row-->
                         </div><!--available permissions-->
-                    </div><!--col-lg-3-->
-                </div><!--form control-->
+                    </div><!--col-lg-10-->
+                </div><!--form-group-->
 
                 <div class="form-group">
                     {{ Form::label('sort', trans('validation.attributes.backend.access.roles.sort'), ['class' => 'col-lg-2 control-label']) }}

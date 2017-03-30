@@ -27,7 +27,6 @@ class StoreCustomerRequest extends Request
     public function rules()
     {
         return [
-            'user_id'       => 'required',
             'citizen_id'    => 'required',
             'firstname'     => 'required',
             'lastname'      => 'required',

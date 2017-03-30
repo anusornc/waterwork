@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend\Access\Customer;
 use App\Models\Access\Customer\Customer;
 use App\Http\Controllers\Controller;
 use App\Repositories\Backend\Access\Customer\CustomerRepository;
+use App\Repositories\Backend\Access\Customer\CustomerTypeRepository;
 use App\Http\Requests\Backend\Access\Customer\ManageCustomerRequest;
 use App\Http\Requests\Backend\Access\Customer\StoreCustomerRequest;
 use App\Http\Requests\Backend\Access\Customer\UpdateCustomerRequest;
@@ -18,15 +19,15 @@ class CustomerController extends Controller
      * @var CustomerRepository
      */
     protected $customers;
-
+    protected $types;
 
     /**
      * @param CustomerRepository       $Customers
      */
-    public function __construct(CustomerRepository $customers)
+    public function __construct(CustomerRepository $customers,CustomerTypeRepository $types)
     {
         $this->customers = $customers;
-
+        $this->types = $types;
     }
 
     public function index()
@@ -42,7 +43,8 @@ class CustomerController extends Controller
     public function create()
     {
         return view('backend.access.customers.create')
-            ->withCustomerCount($this->customers->getCount());
+            ->withCustomerCount($this->customers->getCount())
+            ->withTypes($this->types->getAll()->pluck('name','id'));
     }
 
     /**
@@ -66,7 +68,8 @@ class CustomerController extends Controller
     public function edit(Customer $customer, ManageCustomerRequest $request)
     {
         return view('backend.access.customers.edit')
-            ->withCustomer($customer);
+            ->withCustomer($customer)
+            ->withTypes($this->types->getAll()->pluck('name','id'));
     }
 
     /**
