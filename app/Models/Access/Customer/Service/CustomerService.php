@@ -20,7 +20,9 @@ class CustomerService extends Model
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = ['customer_id','plan_id','meter_id','meter_init','updated_at','service_date','install_house_id','install_tambon','install_aumphur','status_id','created_at' ];
+         
+	      
 
     public function __construct(array $attributes = [])
     {

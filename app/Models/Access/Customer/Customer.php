@@ -4,10 +4,11 @@ namespace App\Models\Access\Customer;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Access\Customer\Traits\Attribute\CustomerAttribute;
+use App\Models\Access\Customer\Traits\Relationship\CustomerRelationship;
 
 class Customer extends Model
 {
-    use CustomerAttribute;
+    use CustomerAttribute,CustomerRelationship;
     /**
      * The database table used by the model.
      *
