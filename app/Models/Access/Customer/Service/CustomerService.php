@@ -3,11 +3,13 @@
 namespace App\Models\Access\Customer\Service;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Access\Customer\Service\Traits\Attribute\CustomerAttribute;
+use App\Models\Access\Customer\Service\Traits\Attribute\CustomerServiceAttribute;
+use App\Models\Access\Customer\Service\Traits\Relationship\CustomerServiceRelationship;
 
 class CustomerService extends Model
 {
-    use CustomerServiceAttribute;
+    use CustomerServiceAttribute,
+        CustomerServiceRelationship;
     /**
      * The database table used by the model.
      *

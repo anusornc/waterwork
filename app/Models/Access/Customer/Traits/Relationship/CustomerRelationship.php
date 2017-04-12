@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Models\Access\Customer\Traits\Relationship;
-use App\Models\Access\Customer;
-use App\Models\Access\Customer\Service;
+use App\Models\Access\Customer\CustomerType;
+use App\Models\Access\Customer\Service\CustomerService;
 /**
  * Class CustomerRelationship.
  */
@@ -13,10 +13,10 @@ trait CustomerRelationship
      */
     public function type()
     {
-        return $this->hasOne(CustomerType::class,'type_id');
+        return $this->belongsTo(CustomerType::class,'type_id');
     }
 
-    public function service() {
+    public function services() {
         return $this->hasMany(CustomerService::class);
     }
 }

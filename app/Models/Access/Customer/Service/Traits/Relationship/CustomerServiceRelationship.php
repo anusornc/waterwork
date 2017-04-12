@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Models\Access\Customer\Traits\Relationship;
-use App\Models\Access\Customer;
-use App\Models\Access\Customer\Service;
+namespace App\Models\Access\Customer\Service\Traits\Relationship;
+use App\Models\Access\Customer\Customer;
+use App\Models\Access\Customer\Service\ServiceStatus;
+
 
 /**
  * Class CustomerServiceRelationship.
  */
 trait CustomerServiceRelationship
 {
-    public function customer() {
-        return $this->belongsTo(Customer::class);
+    public function customers() {
+        return $this->belongsTo(Customer::class,'customer_id');
     }
 
     public function status() {
-        return $this->belongsTo(Status::class);
+        return $this->belongsTo(ServiceStatus::class,'status_id');
     }
 }

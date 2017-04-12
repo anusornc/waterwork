@@ -12,7 +12,7 @@ trait CustomerServiceAttribute
      */
     public function getEditButtonAttribute()
     {
-        return '<a href="'.route('admin.access.customer.service.edit', $this).'" class="btn btn-xs btn-primary"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="'.trans('buttons.general.crud.edit').'"></i></a> ';
+        return '<a href="'.route('admin.access.customer.service.list', $this).'" class="btn btn-xs btn-primary"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="'.trans('buttons.general.crud.edit').'"></i></a> ';
     }
 
     /**
@@ -20,7 +20,7 @@ trait CustomerServiceAttribute
      */
     public function getDeleteButtonAttribute()
     {    
-        return '<a href="'.route('admin.access.customer.service.destroy', $this).'"
+        return '<a href="'.route('admin.access.customer.service.list', $this).'"
             data-method="delete"
             data-trans-button-cancel="'.trans('buttons.general.cancel').'"
             data-trans-button-confirm="'.trans('buttons.general.crud.delete').'"

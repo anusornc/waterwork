@@ -85,6 +85,37 @@ Route::group([
 
             //For DataTables
             Route::post('customer/get', 'CustomerTableController')->name('customer.get');
-        });
+
+            // Route::group(['namespace' => 'Service','as' =>'customer.','prefix'=>'customer'], function () {
+            //     Route::resource('service', 'CustomerServiceController');
+
+            //     //For DataTables
+            //     Route::post('service/get', 'CustomerServiceTableController')->name('service.get');
+            // });
+
+            // Route::group(['namespace' => 'Service', 'as' => 'customer.','prefix' => 'customer/{customer}/'],function () {
+            //         Route::get('/services','CustomerServiceController@index')->name('service.list');
+            //         Route::get('/services/create','CustomerServiceController@create')->name('service.create');
+            //         Route::delete('/services/{service}','CustomerServiceController@destroy')->name('service.destroy');
+            //         Route::patch('/service/{service}','CustomerServiceController@update')->name('service.update');
+            //         Route::get('/service/{service}/edit','CustomerServiceController@edit')->name('service.edit');
+
+            //         //For DataTables
+            //         Route::post('service/get', 'CustomerServiceTableController')->name('service.get');
+            // });
+
+            Route::group(['prefix' => 'customer/{customer}' , 'as' => 'customer.'],function() {
+                Route::get('/services','CustomerController@serviceList')->name('service.list');
+                Route::get('/services/create','CustomerController@serviceCreate')->name('service.create');
+                //Route::delete('/services/{service}','CustomerController@serviceDestroy')->name('service.destroy');
+                //Route::patch('/service/{service}','CustomerController@serviceUpdate')->name('service.update');
+                //Route::get('/service/{service}/edit','CustomerController@serviceEdit')->name('service.edit');
+            });
+            //For DataTables
+            Route::group(['namespace' => 'Service', 'as' => 'customer.'],function() {
+                Route::post('service/get', 'CustomerServiceTableController')->name('service.get');
+            });
+
+        });       
     });
 });

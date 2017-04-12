@@ -34,6 +34,9 @@ class CustomerTableController extends Controller
     {
         return Datatables::of($this->customers->getForDataTable())
             ->escapeColumns(['citizen_id','firstname','lastname'])
+            ->addColumn('service', function ($customer) {
+                return $customer->services->count();
+            })
             ->addColumn('actions', function ($customer) {
                 return $customer->action_buttons;
             })

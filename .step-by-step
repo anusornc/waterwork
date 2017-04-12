@@ -1,0 +1,13 @@
+1.create model
+    -traits
+    -relationship
+2.create repository
+    - event
+    - listener
+    - subscribe EventServiceProvider
+    - history translation
+3.create controller
+    - request
+    - alert translation
+    - route
+4.create view

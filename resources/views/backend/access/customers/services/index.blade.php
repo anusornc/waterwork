@@ -1,19 +1,19 @@
 @extends ('backend.layouts.app')
 
-@section ('title', trans('labels.backend.access.customers.management'))
+@section ('title', trans('labels.backend.access.customers.services.management'))
 
 @section('after-styles')
     {{ Html::style("css/backend/plugin/datatables/dataTables.bootstrap.min.css") }}
 @endsection
 
 @section('page-header')
-    <h1>{{ trans('labels.backend.access.customers.management') }}</h1>
+    <h1>{{ trans('labels.backend.access.customers.services.management') }}</h1>
 @endsection
 
 @section('content')
     <div class="box box-success">
         <div class="box-header with-border">
-            <h3 class="box-title">{{ trans('labels.backend.access.customers.management') }}</h3>
+            <h3 class="box-title">{{ trans('labels.backend.access.customers.services.management') }}</h3>
 
             <div class="box-tools pull-right">
                 @include('backend.access.includes.partials.customer-header-buttons')
@@ -21,14 +21,21 @@
         </div><!-- /.box-header -->
 
         <div class="box-body">
+            <table class="table table-striped table-hover">
+                <tr>
+                    <th>{{ trans('labels.backend.access.users.tabs.content.overview.name') }}</th>
+                    <td>{{ $customer->citizen_id }}</td>
+                </tr>
+            </table>
+
             <div class="table-responsive">
-                <table id="customers-table" class="table table-condensed table-hover">
+                <table id="customers.services-table" class="table table-condensed table-hover">
                     <thead>
                         <tr>
-                            <th>{{ trans('labels.backend.access.customers.table.citizen') }}</th>
-                            <th>{{ trans('labels.backend.access.customers.table.firstname') }}</th>
-                            <th>{{ trans('labels.backend.access.customers.table.lastname') }}</th>
-                            <th>{{ trans('labels.backend.access.customers.table.services') }}</th>
+                            <th>{{ trans('labels.backend.access.customers.services.table.meter_id') }}</th>
+                            <th>{{ trans('labels.backend.access.customers.services.table.meter_init') }}</th>
+                            <th>{{ trans('labels.backend.access.customers.services.table.address') }}</th>
+                            <th>{{ trans('labels.backend.access.customers.services.table.status') }}</th>
                             <th>{{ trans('labels.general.actions') }}</th>
                         </tr>
                     </thead>
@@ -56,18 +63,18 @@
 
     <script>
         $(function() {
-            $('#customers-table').DataTable({
+            $('#customers.services-table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ route("admin.access.customer.get") }}',
+                    url: '{{ route("admin.access.customer.service.get") }}',
                     type: 'post'
                 },
                 columns: [
-                    {data: 'citizen_id', name: 'id',sortable: false},
-                    {data: 'firstname', name: 'firstname', sortable: false},
-                    {data: 'lastname', name: 'lastname', searchable: false, sortable: false},
-                    {data: 'service',name:'service',searchable:false},
+                    {data: 'meter_id', name: 'meter_id',sortable: false},
+                    {data: 'meter_init', name: 'meter_init', sortable: false},
+                    {data: 'address', name: 'address', searchable: false, sortable: false},
+                    {data: 'status', name: 'status',searchable:false},
                     {data: 'actions', name: 'actions', searchable: false, sortable: false}
                 ],
                 order: [[0, "asc"]],
