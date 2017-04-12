@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend\Access\Customer;
 
 use App\Models\Access\Customer\Customer;
+use App\Models\Access\Customer\Service\CustomerService;
 use App\Http\Controllers\Controller;
 
 use App\Repositories\Backend\Access\Customer\CustomerRepository;
@@ -33,7 +34,7 @@ class CustomerController extends Controller
         $this->types = $types;
     }
 
-    public function index()
+    public function index(ManageCustomerRequest $request)
     {
         return view('backend.access.customers.index');
     }
@@ -43,7 +44,7 @@ class CustomerController extends Controller
      *
      * @return mixed
      */
-    public function create()
+    public function create(ManageCustomerRequest $request)
     {
         return view('backend.access.customers.create')
             ->withServiceCount($this->service->getCount())
@@ -101,8 +102,14 @@ class CustomerController extends Controller
         return redirect()->route('admin.access.customer.index')->withFlashSuccess(trans('alerts.backend.customers.deleted'));
     }
 
-    public function serviceList(Customer $customer) {
+    public function serviceList(Customer $customer, ManageCustomerRequest $request) {
         return view('backend.access.customers.services.show')
                 ->withCustomer($customer);
+    }
+
+    public function serviceEdit(Customer $customer, CustomerService $service, ManageCustomerRequest $request) {
+        return view('backend.access.customers.services.edit')
+                ->withCustomer($customer)
+                ->withService($service);
     }
 }

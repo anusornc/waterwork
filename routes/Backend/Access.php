@@ -109,7 +109,7 @@ Route::group([
                 Route::get('/services/create','CustomerController@serviceCreate')->name('service.create');
                 //Route::delete('/services/{service}','CustomerController@serviceDestroy')->name('service.destroy');
                 //Route::patch('/service/{service}','CustomerController@serviceUpdate')->name('service.update');
-                //Route::get('/service/{service}/edit','CustomerController@serviceEdit')->name('service.edit');
+                Route::get('/service/{service}/edit','CustomerController@serviceEdit')->name('service.edit');
             });
             //For DataTables
             Route::group(['namespace' => 'Service', 'as' => 'customer.'],function() {

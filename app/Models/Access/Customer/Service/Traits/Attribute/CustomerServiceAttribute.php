@@ -12,7 +12,7 @@ trait CustomerServiceAttribute
      */
     public function getEditButtonAttribute()
     {
-        return '<a href="'.route('admin.access.customer.service.list', $this).'" class="btn btn-xs btn-primary"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="'.trans('buttons.general.crud.edit').'"></i></a> ';
+        return '<a href="'.route('admin.access.customer.service.edit', [$this->customer_id,$this]).'" class="btn btn-xs btn-primary"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="'.trans('buttons.general.crud.edit').'"></i></a> ';
     }
 
     /**
