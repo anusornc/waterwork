@@ -60,7 +60,7 @@ class CustomerServiceEventListener
     {
         $events->listen(
             \App\Events\Backend\Access\Customer\Service\CustomerServiceCreated::class,
-            'App\Listeners\Backend\Access\Customer\Service\CustomerEventListener@onCreated'
+            'App\Listeners\Backend\Access\Customer\Service\CustomerServiceEventListener@onCreated'
         );
 
         $events->listen(
