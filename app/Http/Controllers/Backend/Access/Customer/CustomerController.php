@@ -101,14 +101,14 @@ class CustomerController extends Controller
     }
 
     public function serviceDestroy(Customer $customer, CustomerService $service, ManageCustomerServiceRequest $request) {
-        $this->service->delete($service);
-        return redirect()->route('admin.access.customer.service.list')->withFlashSuccess(trans('alerts.backend.customers.services.deleted'));
+        $this->services->delete($service);
+        return redirect()->route('admin.access.customer.service.list',$customer->id)->withFlashSuccess(trans('alerts.backend.customers.services.deleted'));
     }
 
     public function serviceUpdate(Customer $customer, CustomerService $service, UpdateCustomerServiceRequest $request) {
-         $this->service->update($service, $request->all());
+         $this->services->update($service, $request->all());
 
-        return redirect()->route('admin.access.customer.service.list')->withFlashSuccess(trans('alerts.backend.customers.services.updated'));
+        return redirect()->route('admin.access.customer.service.list',$customer->id)->withFlashSuccess(trans('alerts.backend.customers.services.updated'));
     }
 
     public function serviceStore(Customer $customer,StoreCustomerServiceRequest $request)
