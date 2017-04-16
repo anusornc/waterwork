@@ -20,7 +20,7 @@ trait CustomerServiceAttribute
      */
     public function getDeleteButtonAttribute()
     {    
-        return '<a href="'.route('admin.access.customer.service.list', $this).'"
+        return '<a href="'.route('admin.access.customer.service.destroy',[$this->customer_id,$this]).'"
             data-method="delete"
             data-trans-button-cancel="'.trans('buttons.general.cancel').'"
             data-trans-button-confirm="'.trans('buttons.general.crud.delete').'"

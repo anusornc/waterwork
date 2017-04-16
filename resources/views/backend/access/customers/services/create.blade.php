@@ -1,6 +1,6 @@
 @extends ('backend.layouts.app')
 
-@section ('title', trans('labels.backend.access.customers.services.management') . ' | ' . trans('labels.backend.access.customers.services.create'))
+@section ('meter_id', trans('labels.backend.access.customers.services.management') . ' | ' . trans('labels.backend.access.customers.services.create'))
 
 @section('page-header')
     <h1>
@@ -10,11 +10,26 @@
 @endsection
 
 @section('content')
-    {{ Form::open(['route' => 'admin.access.customer.service.store', 'class' => 'form-horizontal', 'customer' => 'form', 'method' => 'post', 'id' => 'create-customer']) }}
+    <div class="box box-primary">
+        <div class="box-body">
+            <table class="table table-striped table-hover">
+                <tr>
+                    <th>{{ trans('labels.backend.access.customers.table.citizen') }}</th>
+                    <td>{{ $customer->citizen_id }}</td>
+                </tr>
+
+                <tr>
+                    <th>{{ trans('labels.backend.access.customers.table.firstname') }}</th>
+                    <td>{{ $customer->firstname.'-'.$customer->lastname }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    {{ Form::open(['route' => ['admin.access.customer.service.store',$customer], 'class' => 'form-horizontal', 'customer_services' => 'form', 'method' => 'post', 'id' => 'create-customer_services']) }}
 
         <div class="box box-success">
             <div class="box-header with-border">
-                <h3 class="box-title">{{ trans('labels.backend.access.customers.services.create') }}</h3>
+                <h3 class="box-meter_id">{{ trans('labels.backend.access.customers.services.create') }}</h3>
 
                 <div class="box-tools pull-right">
                     @include('backend.access.includes.partials.customer-header-buttons')
@@ -22,102 +37,62 @@
             </div><!-- /.box-header -->
 
             <div class="box-body">
-                <div class="form-group">
-                    {{ Form::label('citizen_id', trans('validation.attributes.backend.access.customers.services.citizen_id'), ['class' => 'col-lg-2 control-label']) }}
+                 <div class="form-group">
+                    {{ Form::label('meter_id', trans('validation.attributes.backend.access.customers.services.meterid'), ['class' => 'col-lg-2 control-label']) }}
 
                     <div class="col-lg-10">
-                        {{ Form::text('citizen_id', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.services.citizen_id')]) }}
+                        {{ Form::text('meter_id', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.services.meterid')]) }}
                     </div><!--col-lg-10-->
                 </div><!--form control-->
 
                 <div class="form-group">
-                    {{ Form::label('type_id', trans('validation.attributes.backend.access.customers.services.type_id'), ['class' => 'col-lg-2 control-label']) }}
+                    {{ Form::label('meter_init', trans('validation.attributes.backend.access.customers.services.meterinit'), ['class' => 'col-lg-2 control-label']) }}
 
                     <div class="col-lg-10">
-                        {{ Form::select('type_id', $types, null, ['class' => 'form-control']) }}
+                        {{ Form::text('meter_init', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.services.meterinit')]) }}
+                    </div><!--col-lg-10-->
+                </div><!--form control-->
+
+                <div class="form-group">
+                    {{ Form::label('service_date', trans('validation.attributes.backend.access.customers.services.date'), ['class' => 'col-lg-2 control-label']) }}
+
+                    <div class="col-lg-10">
+                        {{ Form::date('service_date', \Carbon\Carbon::now(), ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.services.date')]) }}
+                    </div><!--col-lg-10-->
+                </div><!--form control-->
+
+                <div class="form-group">
+                    {{ Form::label('install_house_id', trans('validation.attributes.backend.access.customers.services.houseid'), ['class' => 'col-lg-2 control-label']) }}
+
+                    <div class="col-lg-10">
+                        {{ Form::text('install_house_id', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.services.houseid')]) }}
+                    </div><!--col-lg-10-->
+                </div><!--form control-->
+
+                <div class="form-group">
+                    {{ Form::label('install_tambon', trans('validation.attributes.backend.access.customers.services.tambon'), ['class' => 'col-lg-2 control-label']) }}
+
+                    <div class="col-lg-10">
+                        {{ Form::text('install_tambon', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.services.tambon')]) }}
+                    </div><!--col-lg-10-->
+                </div><!--form control-->
+
+                <div class="form-group">
+                    {{ Form::label('install_aumphur', trans('validation.attributes.backend.access.customers.services.aumphur'), ['class' => 'col-lg-2 control-label']) }}
+
+                    <div class="col-lg-10">
+                        {{ Form::text('install_aumphur', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.services.aumphur')]) }}
+                    </div><!--col-lg-10-->
+                </div><!--form control-->
+                
+                <div class="form-group">
+                    {{ Form::label('status_id', trans('validation.attributes.backend.access.customers.services.status'), ['class' => 'col-lg-2 control-label']) }}
+
+                    <div class="col-lg-10">
+                        {{ Form::select('status_id', $service_status, null, ['class' => 'form-control']) }}
                     </div><!--col-lg-10-->
                 </div><!--form-group-->
 
-
-                 <div class="form-group">
-                    {{ Form::label('title', trans('validation.attributes.backend.access.customers.services.title'), ['class' => 'col-lg-2 control-label']) }}
-
-                    <div class="col-lg-10">
-                        {{ Form::text('title', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.services.title')]) }}
-                    </div><!--col-lg-10-->
-                </div><!--form control-->
-
-                <div class="form-group">
-                    {{ Form::label('firstname', trans('validation.attributes.backend.access.customers.services.firstname'), ['class' => 'col-lg-2 control-label']) }}
-
-                    <div class="col-lg-10">
-                        {{ Form::text('firstname', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.services.firstname')]) }}
-                    </div><!--col-lg-10-->
-                </div><!--form control-->    
-                
-                <div class="form-group">
-                    {{ Form::label('lastname', trans('validation.attributes.backend.access.customers.services.lastname'), ['class' => 'col-lg-2 control-label']) }}
-
-                    <div class="col-lg-10">
-                        {{ Form::text('lastname', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.services.lastname')]) }}
-                    </div><!--col-lg-10-->
-                </div><!--form control-->    
-
-                <div class="form-group">
-                    {{ Form::label('house_id', trans('validation.attributes.backend.access.customers.services.house_id'), ['class' => 'col-lg-2 control-label']) }}
-
-                    <div class="col-lg-10">
-                        {{ Form::text('house_id', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.services.house_id')]) }}
-                    </div><!--col-lg-10-->
-                </div><!--form control-->    
-
-                <div class="form-group">
-                    {{ Form::label('tambon', trans('validation.attributes.backend.access.customers.services.tambon'), ['class' => 'col-lg-2 control-label']) }}
-
-                    <div class="col-lg-10">
-                        {{ Form::text('tambon', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.services.tambon')]) }}
-                    </div><!--col-lg-10-->
-                </div><!--form control-->
-
-                <div class="form-group">
-                    {{ Form::label('aumphur', trans('validation.attributes.backend.access.customers.services.aumphur'), ['class' => 'col-lg-2 control-label']) }}
-
-                    <div class="col-lg-10">
-                        {{ Form::text('aumphur', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.services.aumphur')]) }}
-                    </div><!--col-lg-10-->
-                </div><!--form control-->
-
-                <div class="form-group">
-                    {{ Form::label('province', trans('validation.attributes.backend.access.customers.services.province'), ['class' => 'col-lg-2 control-label']) }}
-
-                    <div class="col-lg-10">
-                        {{ Form::text('province', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.services.province')]) }}
-                    </div><!--col-lg-10-->
-                </div><!--form control-->
-
-                <div class="form-group">
-                    {{ Form::label('occupation', trans('validation.attributes.backend.access.customers.services.occupation'), ['class' => 'col-lg-2 control-label']) }}
-
-                    <div class="col-lg-10">
-                        {{ Form::text('occupation', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.services.occupation')]) }}
-                    </div><!--col-lg-10-->
-                </div><!--form control-->    
-
-                <div class="form-group">
-                    {{ Form::label('email', trans('validation.attributes.backend.access.customers.services.email'), ['class' => 'col-lg-2 control-label']) }}
-
-                    <div class="col-lg-10">
-                        {{ Form::text('email', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.services.email')]) }}
-                    </div><!--col-lg-10-->
-                </div><!--form control--> 
-
-                <div class="form-group">
-                    {{ Form::label('workplace', trans('validation.attributes.backend.access.customers.services.workplace'), ['class' => 'col-lg-2 control-label']) }}
-
-                    <div class="col-lg-10">
-                        {{ Form::text('workplace', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.customers.services.workplace')]) }}
-                    </div><!--col-lg-10-->
-                </div><!--form control--> 
 
             </div><!-- /.box-body -->
         </div><!--box-->
@@ -125,7 +100,7 @@
         <div class="box box-success">
             <div class="box-body">
                 <div class="pull-left">
-                    {{ link_to_route('admin.access.customer.service.index', trans('buttons.general.cancel'), [], ['class' => 'btn btn-danger btn-xs']) }}
+                    {{ link_to_route('admin.access.customer.service.list', trans('buttons.general.cancel'), [$customer], ['class' => 'btn btn-danger btn-xs']) }}
                 </div><!--pull-left-->
 
                 <div class="pull-right">

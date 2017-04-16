@@ -1,1 +1,1 @@
-{!! history()->renderEntity('Customer', $customer->id) !!}
+{!! history()->renderEntity('CustomerService', $service->id) !!}

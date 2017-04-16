@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events\Backend\Access\Customer_services\Service;
+namespace App\Events\Backend\Access\Customer\Service;
 
 use Illuminate\Queue\SerializesModels;
 

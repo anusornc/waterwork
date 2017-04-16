@@ -3,15 +3,15 @@
 namespace App\Repositories\Backend\Access\Customer\Service;
 
 use App\Repositories\BaseRepository;
-use App\Models\Access\Customer\Service;
+use App\Models\Access\Customer\Service\ServiceStatus;
 
 /**
  * Class StatusRepository.
  */
-class StatusRepository extends BaseRepository
+class ServiceStatusRepository extends BaseRepository
 {
     /**
      * Associated Repository Model.
      */
-    const MODEL = Status::class;
+    const MODEL = ServiceStatus::class;
 }

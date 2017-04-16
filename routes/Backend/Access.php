@@ -107,9 +107,10 @@ Route::group([
             Route::group(['prefix' => 'customer/{customer}' , 'as' => 'customer.'],function() {
                 Route::get('/services','CustomerController@serviceList')->name('service.list');
                 Route::get('/services/create','CustomerController@serviceCreate')->name('service.create');
-                //Route::delete('/services/{service}','CustomerController@serviceDestroy')->name('service.destroy');
-                //Route::patch('/service/{service}','CustomerController@serviceUpdate')->name('service.update');
+                Route::delete('/services/{service}','CustomerController@serviceDestroy')->name('service.destroy');
+                Route::patch('/service/{service}','CustomerController@serviceUpdate')->name('service.update');
                 Route::get('/service/{service}/edit','CustomerController@serviceEdit')->name('service.edit');
+                Route::post('/services','CustomerController@serviceStore')->name('service.store');
             });
             //For DataTables
             Route::group(['namespace' => 'Service', 'as' => 'customer.'],function() {

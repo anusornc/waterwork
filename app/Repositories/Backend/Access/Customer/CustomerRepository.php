@@ -3,6 +3,8 @@
 namespace App\Repositories\Backend\Access\Customer;
 
 use App\Models\Access\Customer\Customer;
+use App\Models\Access\Customer\Service\CustomerService;
+
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\GeneralException;
 use App\Repositories\BaseRepository;
@@ -106,6 +108,32 @@ class CustomerRepository extends BaseRepository
             }
 
             throw new GeneralException(trans('exceptions.backend.access.customers.delete_error'));
+        });
+    }
+
+    public function createService(Customer $customer,array $input)
+    {
+        
+        DB::transaction(function () use ($input) {
+            $customer = self::MODEL;
+            $customer = new $customer();
+           
+            $customer->services->customer_id = $customer->id;
+            $customer->services->meter_id = $input['meter_id'];
+            $customer->services->meter_init = $input['meter_init'];
+            $customer->services->service_date = $input['service_date'];
+            $customer->services->install_house_id = $input['install_house_id'];
+            $customer->services->install_tambon= $input['install_tambon'];
+            $customer->services->install_aumphur= $input['install_aumphur'];
+            $customer->services->status_id = $input['status_id'];
+
+            if ($customer->save()) {
+                //event(new CustomerServiceCreated($customer));
+                return true;
+            } 
+            return true;
+
+            throw new GeneralException(trans('exceptions.backend.access.customers.services.create_error'));
         });
     }
 }

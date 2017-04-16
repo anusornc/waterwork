@@ -27,13 +27,12 @@ class UpdateCustomerServiceRequest extends Request
     public function rules()
     {
         return [
-            'customer_id'  > 'required',
-            'meter_id'     => 'required',
-            'meter_init'   => 'required',
-            'install_house_id' => 'required',
-            'install_tambon' => 'required',
-            'install_aumphur' => 'required',
-            'status_id' => 'required',
+            'meter_id'          => 'required',
+            'meter_init'        => 'required',
+            'install_house_id'  => 'required',
+            'install_tambon'    => 'required',
+            'install_aumphur'   => 'required',
+            'status_id'         => 'required',
         ];
     }
 }
