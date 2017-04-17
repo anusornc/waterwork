@@ -97,7 +97,9 @@ class CustomerController extends Controller
     public function serviceEdit(Customer $customer, CustomerService $service, ManageCustomerServiceRequest $request) {
         return view('backend.access.customers.services.edit')
                 ->withCustomer($customer)
-                ->withService($service);
+                ->withService($service)
+                ->withServiceStatus($this->status->getAll()->pluck('name','id'));
+
     }
 
     public function serviceDestroy(Customer $customer, CustomerService $service, ManageCustomerServiceRequest $request) {
@@ -106,7 +108,7 @@ class CustomerController extends Controller
     }
 
     public function serviceUpdate(Customer $customer, CustomerService $service, UpdateCustomerServiceRequest $request) {
-         $this->services->update($service, $request->all());
+         $this->services->update($service,['data'=>$request->all(),'customer'=>$customer->id]);
 
         return redirect()->route('admin.access.customer.service.list',$customer->id)->withFlashSuccess(trans('alerts.backend.customers.services.updated'));
     }

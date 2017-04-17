@@ -71,7 +71,10 @@ class CustomerServiceRepository extends BaseRepository
 
     public function update(Model $customerService, array $input)
     {
-            $customerService->customer_id = $input['customer_id'];
+            $c = $input['customer'];
+            $input = $input['data'];
+ 
+           // $customerService->customer_id = $input['customer_id'];
             $customerService->meter_id = $input['meter_id'];
             $customerService->meter_init = $input['meter_init'];
             $customerService->service_date = $input['service_date'];
