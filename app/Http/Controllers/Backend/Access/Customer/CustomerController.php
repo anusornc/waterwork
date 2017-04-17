@@ -97,18 +97,20 @@ class CustomerController extends Controller
     public function serviceEdit(Customer $customer, CustomerService $service, ManageCustomerServiceRequest $request) {
         return view('backend.access.customers.services.edit')
                 ->withCustomer($customer)
-                ->withService($service);
+                ->withService($service)
+                ->withServiceStatus($this->status->getAll()->pluck('name','id'));
+
     }
 
     public function serviceDestroy(Customer $customer, CustomerService $service, ManageCustomerServiceRequest $request) {
-        $this->service->delete($service);
-        return redirect()->route('admin.access.customer.service.list')->withFlashSuccess(trans('alerts.backend.customers.services.deleted'));
+        $this->services->delete($service);
+        return redirect()->route('admin.access.customer.service.list',$customer->id)->withFlashSuccess(trans('alerts.backend.customers.services.deleted'));
     }
 
     public function serviceUpdate(Customer $customer, CustomerService $service, UpdateCustomerServiceRequest $request) {
-         $this->service->update($service, $request->all());
+         $this->services->update($service,['data'=>$request->all(),'customer'=>$customer->id]);
 
-        return redirect()->route('admin.access.customer.service.list')->withFlashSuccess(trans('alerts.backend.customers.services.updated'));
+        return redirect()->route('admin.access.customer.service.list',$customer->id)->withFlashSuccess(trans('alerts.backend.customers.services.updated'));
     }
 
     public function serviceStore(Customer $customer,StoreCustomerServiceRequest $request)

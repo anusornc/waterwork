@@ -32,12 +32,12 @@
                 <h3 class="box-meter_id">{{ trans('labels.backend.access.customers.services.create') }}</h3>
 
                 <div class="box-tools pull-right">
-                    @include('backend.access.includes.partials.customer-header-buttons')
+                    @include('backend.access.includes.partials.customer-service-header-buttons')
                 </div><!--box-tools pull-right-->
             </div><!-- /.box-header -->
 
             <div class="box-body">
-                 <div class="form-group">
+                <div class="form-group">
                     {{ Form::label('meter_id', trans('validation.attributes.backend.access.customers.services.meterid'), ['class' => 'col-lg-2 control-label']) }}
 
                     <div class="col-lg-10">
