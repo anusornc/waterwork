@@ -201,6 +201,12 @@ return [
         App\Providers\MacroServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        /*
+            https://github.com/barryvdh/laravel-snappy pdf generator
+        */
+        Barryvdh\Snappy\ServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class,
+        Appstract\Opcache\OpcacheServiceProvider::class,
     ],
 
     /*
@@ -261,6 +267,10 @@ return [
         'Html'        => Collective\Html\HtmlFacade::class,
         'Socialite'   => Laravel\Socialite\Facades\Socialite::class,
 
+        'PDF'         => Barryvdh\Snappy\Facades\SnappyPdf::class,
+        'SnappyImage' => Barryvdh\Snappy\Facades\SnappyImage::class,
+        'PDF2'        => Barryvdh\DomPDF\Facade::class,
+        
     ],
 
 ];

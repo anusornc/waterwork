@@ -19,6 +19,7 @@ use App\Http\Requests\Backend\Access\Customer\Service\UpdateCustomerServiceReque
 use App\Http\Requests\Backend\Access\Customer\StoreCustomerRequest;
 use App\Http\Requests\Backend\Access\Customer\UpdateCustomerRequest;
 
+use PDF2;
 /**
  * Class CustomerController.
  */
@@ -79,6 +80,20 @@ class CustomerController extends Controller
         return redirect()->route('admin.access.customer.index')->withFlashSuccess(trans('alerts.backend.customers.deleted'));
     }
 
+    public function print(Customer $customer,ManageCustomerRequest $request) {
+        //dd($customer);
+        $view =  \View::make('backend.access.customers.pdfview', ['customer'=>$customer])->render();
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML($view);
+        return $pdf->stream('form-customer-register.pdf');
+    }
+    
+    public function viewform(Customer $customer, CustomerService $service, ManageCustomerRequest $request) {
+        return view('backend.access.customers.pdfview')
+            ->withCustomer($customer)
+            ->withServiceCount($this->services->getCount())
+            ->withServiceStatus($this->status->getAll());
+    }
 
     public function serviceCreate(Customer $customer,ManageCustomerServiceRequest $request)
     {

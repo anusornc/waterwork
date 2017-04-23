@@ -42,11 +42,33 @@ trait CustomerAttribute
 
     public  function getAddServiceButtonAttribute() {
         return '<a href="'.route('admin.access.customer.service.create', $this).
-                    '" class="btn btn-xs btn-primary">
+                    '" class="btn btn-xs btn-success">
                     <i class="fa fa-plus" 
                         data-toggle="tooltip" 
                         data-placement="top" 
                         title="'.trans('buttons.general.crud.register').'">
+                    </i>
+                </a> ';
+    }
+
+    public function getPrintFormButtonAttribute(){
+        return '<a href="'.route('admin.access.customer.print', $this).
+                    '" class="btn btn-xs btn-info" target="_blank">
+                    <i class="fa fa-print" 
+                        data-toggle="tooltip" 
+                        data-placement="top" 
+                        title="'.trans('buttons.general.crud.print').'">
+                    </i>
+                </a> ';
+    }
+    
+    public function getViewFormButtonAttribute(){
+        return '<a href="'.route('admin.access.customer.viewform', $this).
+                    '" class="btn btn-xs btn-info" target="_blank">
+                    <i class="fa fa-file-text" 
+                        data-toggle="tooltip" 
+                        data-placement="top" 
+                        title="'.trans('buttons.general.crud.viewform').'">
                     </i>
                 </a> ';
     }
@@ -59,6 +81,8 @@ trait CustomerAttribute
         return $this->getEditButtonAttribute().
         $this->getDeleteButtonAttribute().
         $this->getListServiceButtonAttribute().
-        $this->getAddServiceButtonAttribute();
+        $this->getAddServiceButtonAttribute(). 
+        $this->getPrintFormButtonAttribute().
+        $this->getViewFormButtonAttribute();
     }
 }
