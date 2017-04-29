@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend\Access\Customer;
 use App\Models\Access\Customer\Customer;
 use App\Models\Access\Customer\Service\CustomerService;
 use App\Models\Access\Customer\Service\ServiceStatus;
+use App\Models\Access\Customer\Sys;
 use App\Http\Controllers\Controller;
 
 use App\Repositories\Backend\Access\Customer\CustomerRepository;
@@ -80,19 +81,21 @@ class CustomerController extends Controller
         return redirect()->route('admin.access.customer.index')->withFlashSuccess(trans('alerts.backend.customers.deleted'));
     }
 
-    public function print(Customer $customer,ManageCustomerRequest $request) {
-        //dd($customer);
-        $view =  \View::make('backend.access.customers.pdfview', ['customer'=>$customer])->render();
+    public function print(Customer $customer,ManageCustomerRequest $request,Sys $s) {
+        $system = $s->all();
+        //dd($system);
+        $view =  \View::make('backend.access.customers.pdfview', ['customer'=>$customer,'sys'=>$system])->render();
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML($view);
         return $pdf->stream('form-customer-register.pdf');
     }
     
-    public function viewform(Customer $customer, CustomerService $service, ManageCustomerRequest $request) {
+    public function viewform(Customer $customer, CustomerService $service, ManageCustomerRequest $request,Sys $s) {
         return view('backend.access.customers.pdfview')
             ->withCustomer($customer)
             ->withServiceCount($this->services->getCount())
-            ->withServiceStatus($this->status->getAll());
+            ->withServiceStatus($this->status->getAll())
+            ->withSystemVar($s);
     }
 
     public function serviceCreate(Customer $customer,ManageCustomerServiceRequest $request)
