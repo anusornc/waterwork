@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Backend\Access\Customer;
 use App\Models\Access\Customer\Customer;
 use App\Models\Access\Customer\Service\CustomerService;
 use App\Models\Access\Customer\Service\ServiceStatus;
-use App\Models\Access\Customer\Sys;
+use App\Models\Access\SystemVar\Sys;
 use App\Http\Controllers\Controller;
 
 use App\Repositories\Backend\Access\Customer\CustomerRepository;
@@ -95,7 +95,7 @@ class CustomerController extends Controller
             ->withCustomer($customer)
             ->withServiceCount($this->services->getCount())
             ->withServiceStatus($this->status->getAll())
-            ->withSystemVar($s);
+            ->withSys($s->all());
     }
 
     public function serviceCreate(Customer $customer,ManageCustomerServiceRequest $request)
