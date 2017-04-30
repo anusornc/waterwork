@@ -18,8 +18,8 @@ class CustomerServiceEventListener
     public function onCreated($event)
     {
         history()->withType($this->history_slug)
-            ->withEntity($event->service->id)
-            ->withText('trans("history.backend.customers.services.created") <strong>'.$event->service->citizen_id."-".$event->service->meter_id.'</strong>')
+            ->withEntity($event->customer_services->id)
+            ->withText('trans("history.backend.customers.services.created") <strong>'.$event->customer_services->citizen_id."-".$event->customer_services->meter_id.'</strong>')
             ->withIcon('plus')
             ->withClass('bg-green')
             ->log();
@@ -31,8 +31,8 @@ class CustomerServiceEventListener
     public function onUpdated($event)
     {
         history()->withType($this->history_slug)
-            ->withEntity($event->service->id)
-            ->withText('trans("history.backend.customers.services.updated") <strong>'.$event->service->citizen_id."-".$event->service->meter_id.'</strong>')
+            ->withEntity($event->customer_services->id)
+            ->withText('trans("history.backend.customers.services.updated") <strong>'.$event->customer_services->citizen_id."-".$event->customer_services->meter_id.'</strong>')
             ->withIcon('save')
             ->withClass('bg-aqua')
             ->log();
@@ -44,8 +44,8 @@ class CustomerServiceEventListener
     public function onDeleted($event)
     {
         history()->withType($this->history_slug)
-            ->withEntity($event->service->id)
-            ->withText('trans("history.backend.customers.services.deleted") <strong>'.$event->service->citizen_id."-".$event->service->meter_id.'</strong>')
+            ->withEntity($event->customer_services->id)
+            ->withText('trans("history.backend.customers.services.deleted") <strong>'.$event->customer_services->citizen_id."-".$event->customer_services->meter_id.'</strong>')
             ->withIcon('trash')
             ->withClass('bg-maroon')
             ->log();
@@ -60,7 +60,7 @@ class CustomerServiceEventListener
     {
         $events->listen(
             \App\Events\Backend\Access\Customer\Service\CustomerServiceCreated::class,
-            'App\Listeners\Backend\Access\Customer\Service\CustomerEventListener@onCreated'
+            'App\Listeners\Backend\Access\Customer\Service\CustomerServiceEventListener@onCreated'
         );
 
         $events->listen(

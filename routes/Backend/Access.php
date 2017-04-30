@@ -86,6 +86,10 @@ Route::group([
             //For DataTables
             Route::post('customer/get', 'CustomerTableController')->name('customer.get');
 
+            Route::get('customer/{customer}/print','CustomerController@print')->name('customer.print');
+            Route::get('customer/{customer}/viewform','CustomerController@viewform')->name('customer.viewform');
+
+
             // Route::group(['namespace' => 'Service','as' =>'customer.','prefix'=>'customer'], function () {
             //     Route::resource('service', 'CustomerServiceController');
 

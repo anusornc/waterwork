@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend\Access\Customer;
 use App\Models\Access\Customer\Customer;
 use App\Models\Access\Customer\Service\CustomerService;
 use App\Models\Access\Customer\Service\ServiceStatus;
+use App\Models\Access\SystemVar\Sys;
 use App\Http\Controllers\Controller;
 
 use App\Repositories\Backend\Access\Customer\CustomerRepository;
@@ -19,6 +20,7 @@ use App\Http\Requests\Backend\Access\Customer\Service\UpdateCustomerServiceReque
 use App\Http\Requests\Backend\Access\Customer\StoreCustomerRequest;
 use App\Http\Requests\Backend\Access\Customer\UpdateCustomerRequest;
 
+use PDF2;
 /**
  * Class CustomerController.
  */
@@ -79,6 +81,22 @@ class CustomerController extends Controller
         return redirect()->route('admin.access.customer.index')->withFlashSuccess(trans('alerts.backend.customers.deleted'));
     }
 
+    public function print(Customer $customer,ManageCustomerRequest $request,Sys $s) {
+        $system = $s->all();
+        //dd($system);
+        $view =  \View::make('backend.access.customers.pdfview', ['customer'=>$customer,'sys'=>$system])->render();
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML($view);
+        return $pdf->stream('form-customer-register.pdf');
+    }
+    
+    public function viewform(Customer $customer, CustomerService $service, ManageCustomerRequest $request,Sys $s) {
+        return view('backend.access.customers.pdfview')
+            ->withCustomer($customer)
+            ->withServiceCount($this->services->getCount())
+            ->withServiceStatus($this->status->getAll())
+            ->withSys($s->all());
+    }
 
     public function serviceCreate(Customer $customer,ManageCustomerServiceRequest $request)
     {
@@ -97,18 +115,20 @@ class CustomerController extends Controller
     public function serviceEdit(Customer $customer, CustomerService $service, ManageCustomerServiceRequest $request) {
         return view('backend.access.customers.services.edit')
                 ->withCustomer($customer)
-                ->withService($service);
+                ->withService($service)
+                ->withServiceStatus($this->status->getAll()->pluck('name','id'));
+
     }
 
     public function serviceDestroy(Customer $customer, CustomerService $service, ManageCustomerServiceRequest $request) {
-        $this->service->delete($service);
-        return redirect()->route('admin.access.customer.service.list')->withFlashSuccess(trans('alerts.backend.customers.services.deleted'));
+        $this->services->delete($service);
+        return redirect()->route('admin.access.customer.service.list',$customer->id)->withFlashSuccess(trans('alerts.backend.customers.services.deleted'));
     }
 
     public function serviceUpdate(Customer $customer, CustomerService $service, UpdateCustomerServiceRequest $request) {
-         $this->service->update($service, $request->all());
+         $this->services->update($service,['data'=>$request->all(),'customer'=>$customer->id]);
 
-        return redirect()->route('admin.access.customer.service.list')->withFlashSuccess(trans('alerts.backend.customers.services.updated'));
+        return redirect()->route('admin.access.customer.service.list',$customer->id)->withFlashSuccess(trans('alerts.backend.customers.services.updated'));
     }
 
     public function serviceStore(Customer $customer,StoreCustomerServiceRequest $request)

@@ -55,18 +55,26 @@ class CustomerServiceRepository extends BaseRepository
             $customerService->install_aumphur = $input['install_aumphur'];
             $customerService->status_id = $input['status_id'];
 
-            if ($customerService->save()) {
-                event(new CustomerServiceCreated($customerService));
-                return true;
+            try {
+                if ($customerService->save()) {
+                    event(new CustomerServiceCreated($customerService));
+                    return true;
+                } else {
+                    throw new GeneralException(trans('exceptions.backend.access.customers.create_error'));
+                }
+            } catch(\Illuminate\Database\QueryException $ex){ 
+                //dd($ex->getMessage()); 
+                throw new GeneralException($ex->getMessage());
             }
-
-            throw new GeneralException(trans('exceptions.backend.access.customers.create_error'));
         });
     }
 
     public function update(Model $customerService, array $input)
     {
-            $customerService->customer_id = $input['customer_id'];
+            $c = $input['customer'];
+            $input = $input['data'];
+ 
+           // $customerService->customer_id = $input['customer_id'];
             $customerService->meter_id = $input['meter_id'];
             $customerService->meter_init = $input['meter_init'];
             $customerService->service_date = $input['service_date'];

@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "./";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 43);
+/******/ 	return __webpack_require__(__webpack_require__.s = 44);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -377,17 +377,17 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * jQuery JavaScript Library v3.1.1
+ * jQuery JavaScript Library v3.2.1
  * https://jquery.com/
  *
  * Includes Sizzle.js
  * https://sizzlejs.com/
  *
- * Copyright jQuery Foundation and other contributors
+ * Copyright JS Foundation and other contributors
  * Released under the MIT license
  * https://jquery.org/license
  *
- * Date: 2016-09-22T22:30Z
+ * Date: 2017-03-20T18:59Z
  */
 ( function( global, factory ) {
 
@@ -466,7 +466,7 @@ var support = {};
 
 
 var
-	version = "3.1.1",
+	version = "3.2.1",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -614,11 +614,11 @@ jQuery.extend = jQuery.fn.extend = function() {
 
 				// Recurse if we're merging plain objects or arrays
 				if ( deep && copy && ( jQuery.isPlainObject( copy ) ||
-					( copyIsArray = jQuery.isArray( copy ) ) ) ) {
+					( copyIsArray = Array.isArray( copy ) ) ) ) {
 
 					if ( copyIsArray ) {
 						copyIsArray = false;
-						clone = src && jQuery.isArray( src ) ? src : [];
+						clone = src && Array.isArray( src ) ? src : [];
 
 					} else {
 						clone = src && jQuery.isPlainObject( src ) ? src : {};
@@ -656,8 +656,6 @@ jQuery.extend( {
 	isFunction: function( obj ) {
 		return jQuery.type( obj ) === "function";
 	},
-
-	isArray: Array.isArray,
 
 	isWindow: function( obj ) {
 		return obj != null && obj === obj.window;
@@ -731,10 +729,6 @@ jQuery.extend( {
 	// Microsoft forgot to hump their vendor prefix (#9572)
 	camelCase: function( string ) {
 		return string.replace( rmsPrefix, "ms-" ).replace( rdashAlpha, fcamelCase );
-	},
-
-	nodeName: function( elem, name ) {
-		return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
 	},
 
 	each: function( obj, callback ) {
@@ -3221,6 +3215,13 @@ var siblings = function( n, elem ) {
 
 var rneedsContext = jQuery.expr.match.needsContext;
 
+
+
+function nodeName( elem, name ) {
+
+  return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
+
+};
 var rsingleTag = ( /^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|)$/i );
 
 
@@ -3572,7 +3573,18 @@ jQuery.each( {
 		return siblings( elem.firstChild );
 	},
 	contents: function( elem ) {
-		return elem.contentDocument || jQuery.merge( [], elem.childNodes );
+        if ( nodeName( elem, "iframe" ) ) {
+            return elem.contentDocument;
+        }
+
+        // Support: IE 9 - 11 only, iOS 7 only, Android Browser <=4.3 only
+        // Treat the template element as a regular one in browsers that
+        // don't support it.
+        if ( nodeName( elem, "template" ) ) {
+            elem = elem.content || elem;
+        }
+
+        return jQuery.merge( [], elem.childNodes );
 	}
 }, function( name, fn ) {
 	jQuery.fn[ name ] = function( until, selector ) {
@@ -3670,7 +3682,7 @@ jQuery.Callbacks = function( options ) {
 		fire = function() {
 
 			// Enforce single-firing
-			locked = options.once;
+			locked = locked || options.once;
 
 			// Execute callbacks for all pending executions,
 			// respecting firingIndex overrides and runtime changes
@@ -3839,7 +3851,7 @@ function Thrower( ex ) {
 	throw ex;
 }
 
-function adoptValue( value, resolve, reject ) {
+function adoptValue( value, resolve, reject, noValue ) {
 	var method;
 
 	try {
@@ -3855,9 +3867,10 @@ function adoptValue( value, resolve, reject ) {
 		// Other non-thenables
 		} else {
 
-			// Support: Android 4.0 only
-			// Strict mode functions invoked without .call/.apply get global-object context
-			resolve.call( undefined, value );
+			// Control `resolve` arguments by letting Array#slice cast boolean `noValue` to integer:
+			// * false: [ value ].slice( 0 ) => resolve( value )
+			// * true: [ value ].slice( 1 ) => resolve()
+			resolve.apply( undefined, [ value ].slice( noValue ) );
 		}
 
 	// For Promises/A+, convert exceptions into rejections
@@ -3867,7 +3880,7 @@ function adoptValue( value, resolve, reject ) {
 
 		// Support: Android 4.0 only
 		// Strict mode functions invoked without .call/.apply get global-object context
-		reject.call( undefined, value );
+		reject.apply( undefined, [ value ] );
 	}
 }
 
@@ -4192,7 +4205,8 @@ jQuery.extend( {
 
 		// Single- and empty arguments are adopted like Promise.resolve
 		if ( remaining <= 1 ) {
-			adoptValue( singleValue, master.done( updateFunc( i ) ).resolve, master.reject );
+			adoptValue( singleValue, master.done( updateFunc( i ) ).resolve, master.reject,
+				!remaining );
 
 			// Use .then() to unwrap secondary thenables (cf. gh-3000)
 			if ( master.state() === "pending" ||
@@ -4263,15 +4277,6 @@ jQuery.extend( {
 	// A counter to track how many items to wait for before
 	// the ready event fires. See #6781
 	readyWait: 1,
-
-	// Hold (or release) the ready event
-	holdReady: function( hold ) {
-		if ( hold ) {
-			jQuery.readyWait++;
-		} else {
-			jQuery.ready( true );
-		}
-	},
 
 	// Handle when the DOM is ready
 	ready: function( wait ) {
@@ -4508,7 +4513,7 @@ Data.prototype = {
 		if ( key !== undefined ) {
 
 			// Support array or space separated string of keys
-			if ( jQuery.isArray( key ) ) {
+			if ( Array.isArray( key ) ) {
 
 				// If key is an array of keys...
 				// We always set camelCase keys, so remove that.
@@ -4734,7 +4739,7 @@ jQuery.extend( {
 
 			// Speed up dequeue by getting out quickly if this is just a lookup
 			if ( data ) {
-				if ( !queue || jQuery.isArray( data ) ) {
+				if ( !queue || Array.isArray( data ) ) {
 					queue = dataPriv.access( elem, type, jQuery.makeArray( data ) );
 				} else {
 					queue.push( data );
@@ -5111,7 +5116,7 @@ function getAll( context, tag ) {
 		ret = [];
 	}
 
-	if ( tag === undefined || tag && jQuery.nodeName( context, tag ) ) {
+	if ( tag === undefined || tag && nodeName( context, tag ) ) {
 		return jQuery.merge( [ context ], ret );
 	}
 
@@ -5718,7 +5723,7 @@ jQuery.event = {
 
 			// For checkbox, fire native event so checked state will be right
 			trigger: function() {
-				if ( this.type === "checkbox" && this.click && jQuery.nodeName( this, "input" ) ) {
+				if ( this.type === "checkbox" && this.click && nodeName( this, "input" ) ) {
 					this.click();
 					return false;
 				}
@@ -5726,7 +5731,7 @@ jQuery.event = {
 
 			// For cross-browser consistency, don't fire native .click() on links
 			_default: function( event ) {
-				return jQuery.nodeName( event.target, "a" );
+				return nodeName( event.target, "a" );
 			}
 		},
 
@@ -6003,11 +6008,12 @@ var
 	rscriptTypeMasked = /^true\/(.*)/,
 	rcleanScript = /^\s*<!(?:\[CDATA\[|--)|(?:\]\]|--)>\s*$/g;
 
+// Prefer a tbody over its parent table for containing new rows
 function manipulationTarget( elem, content ) {
-	if ( jQuery.nodeName( elem, "table" ) &&
-		jQuery.nodeName( content.nodeType !== 11 ? content : content.firstChild, "tr" ) ) {
+	if ( nodeName( elem, "table" ) &&
+		nodeName( content.nodeType !== 11 ? content : content.firstChild, "tr" ) ) {
 
-		return elem.getElementsByTagName( "tbody" )[ 0 ] || elem;
+		return jQuery( ">tbody", elem )[ 0 ] || elem;
 	}
 
 	return elem;
@@ -6537,12 +6543,18 @@ var getStyles = function( elem ) {
 
 function curCSS( elem, name, computed ) {
 	var width, minWidth, maxWidth, ret,
+
+		// Support: Firefox 51+
+		// Retrieving style before computed somehow
+		// fixes an issue with getting wrong values
+		// on detached elements
 		style = elem.style;
 
 	computed = computed || getStyles( elem );
 
-	// Support: IE <=9 only
-	// getPropertyValue is only needed for .css('filter') (#12537)
+	// getPropertyValue is needed for:
+	//   .css('filter') (IE 9 only, #12537)
+	//   .css('--customProperty) (#3144)
 	if ( computed ) {
 		ret = computed.getPropertyValue( name ) || computed[ name ];
 
@@ -6608,6 +6620,7 @@ var
 	// except "table", "table-cell", or "table-caption"
 	// See here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
 	rdisplayswap = /^(none|table(?!-c[ea]).+)/,
+	rcustomProp = /^--/,
 	cssShow = { position: "absolute", visibility: "hidden", display: "block" },
 	cssNormalTransform = {
 		letterSpacing: "0",
@@ -6635,6 +6648,16 @@ function vendorPropName( name ) {
 			return name;
 		}
 	}
+}
+
+// Return a property mapped along what jQuery.cssProps suggests or to
+// a vendor prefixed property.
+function finalPropName( name ) {
+	var ret = jQuery.cssProps[ name ];
+	if ( !ret ) {
+		ret = jQuery.cssProps[ name ] = vendorPropName( name ) || name;
+	}
+	return ret;
 }
 
 function setPositiveNumber( elem, value, subtract ) {
@@ -6697,43 +6720,30 @@ function augmentWidthOrHeight( elem, name, extra, isBorderBox, styles ) {
 
 function getWidthOrHeight( elem, name, extra ) {
 
-	// Start with offset property, which is equivalent to the border-box value
-	var val,
-		valueIsBorderBox = true,
+	// Start with computed style
+	var valueIsBorderBox,
 		styles = getStyles( elem ),
+		val = curCSS( elem, name, styles ),
 		isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
 
-	// Support: IE <=11 only
-	// Running getBoundingClientRect on a disconnected node
-	// in IE throws an error.
-	if ( elem.getClientRects().length ) {
-		val = elem.getBoundingClientRect()[ name ];
+	// Computed unit is not pixels. Stop here and return.
+	if ( rnumnonpx.test( val ) ) {
+		return val;
 	}
 
-	// Some non-html elements return undefined for offsetWidth, so check for null/undefined
-	// svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
-	// MathML - https://bugzilla.mozilla.org/show_bug.cgi?id=491668
-	if ( val <= 0 || val == null ) {
+	// Check for style in case a browser which returns unreliable values
+	// for getComputedStyle silently falls back to the reliable elem.style
+	valueIsBorderBox = isBorderBox &&
+		( support.boxSizingReliable() || val === elem.style[ name ] );
 
-		// Fall back to computed then uncomputed css if necessary
-		val = curCSS( elem, name, styles );
-		if ( val < 0 || val == null ) {
-			val = elem.style[ name ];
-		}
-
-		// Computed unit is not pixels. Stop here and return.
-		if ( rnumnonpx.test( val ) ) {
-			return val;
-		}
-
-		// Check for style in case a browser which returns unreliable values
-		// for getComputedStyle silently falls back to the reliable elem.style
-		valueIsBorderBox = isBorderBox &&
-			( support.boxSizingReliable() || val === elem.style[ name ] );
-
-		// Normalize "", auto, and prepare for extra
-		val = parseFloat( val ) || 0;
+	// Fall back to offsetWidth/Height when value is "auto"
+	// This happens for inline elements with no explicit setting (gh-3571)
+	if ( val === "auto" ) {
+		val = elem[ "offset" + name[ 0 ].toUpperCase() + name.slice( 1 ) ];
 	}
+
+	// Normalize "", auto, and prepare for extra
+	val = parseFloat( val ) || 0;
 
 	// Use the active box-sizing model to add/subtract irrelevant styles
 	return ( val +
@@ -6798,10 +6808,15 @@ jQuery.extend( {
 		// Make sure that we're working with the right name
 		var ret, type, hooks,
 			origName = jQuery.camelCase( name ),
+			isCustomProp = rcustomProp.test( name ),
 			style = elem.style;
 
-		name = jQuery.cssProps[ origName ] ||
-			( jQuery.cssProps[ origName ] = vendorPropName( origName ) || origName );
+		// Make sure that we're working with the right name. We don't
+		// want to query the value if it is a CSS custom property
+		// since they are user-defined.
+		if ( !isCustomProp ) {
+			name = finalPropName( origName );
+		}
 
 		// Gets hook for the prefixed version, then unprefixed version
 		hooks = jQuery.cssHooks[ name ] || jQuery.cssHooks[ origName ];
@@ -6837,7 +6852,11 @@ jQuery.extend( {
 			if ( !hooks || !( "set" in hooks ) ||
 				( value = hooks.set( elem, value, extra ) ) !== undefined ) {
 
-				style[ name ] = value;
+				if ( isCustomProp ) {
+					style.setProperty( name, value );
+				} else {
+					style[ name ] = value;
+				}
 			}
 
 		} else {
@@ -6856,11 +6875,15 @@ jQuery.extend( {
 
 	css: function( elem, name, extra, styles ) {
 		var val, num, hooks,
-			origName = jQuery.camelCase( name );
+			origName = jQuery.camelCase( name ),
+			isCustomProp = rcustomProp.test( name );
 
-		// Make sure that we're working with the right name
-		name = jQuery.cssProps[ origName ] ||
-			( jQuery.cssProps[ origName ] = vendorPropName( origName ) || origName );
+		// Make sure that we're working with the right name. We don't
+		// want to modify the value if it is a CSS custom property
+		// since they are user-defined.
+		if ( !isCustomProp ) {
+			name = finalPropName( origName );
+		}
 
 		// Try prefixed name followed by the unprefixed name
 		hooks = jQuery.cssHooks[ name ] || jQuery.cssHooks[ origName ];
@@ -6885,6 +6908,7 @@ jQuery.extend( {
 			num = parseFloat( val );
 			return extra === true || isFinite( num ) ? num || 0 : val;
 		}
+
 		return val;
 	}
 } );
@@ -6984,7 +7008,7 @@ jQuery.fn.extend( {
 				map = {},
 				i = 0;
 
-			if ( jQuery.isArray( name ) ) {
+			if ( Array.isArray( name ) ) {
 				styles = getStyles( elem );
 				len = name.length;
 
@@ -7122,13 +7146,18 @@ jQuery.fx.step = {};
 
 
 var
-	fxNow, timerId,
+	fxNow, inProgress,
 	rfxtypes = /^(?:toggle|show|hide)$/,
 	rrun = /queueHooks$/;
 
-function raf() {
-	if ( timerId ) {
-		window.requestAnimationFrame( raf );
+function schedule() {
+	if ( inProgress ) {
+		if ( document.hidden === false && window.requestAnimationFrame ) {
+			window.requestAnimationFrame( schedule );
+		} else {
+			window.setTimeout( schedule, jQuery.fx.interval );
+		}
+
 		jQuery.fx.tick();
 	}
 }
@@ -7355,7 +7384,7 @@ function propFilter( props, specialEasing ) {
 		name = jQuery.camelCase( index );
 		easing = specialEasing[ name ];
 		value = props[ index ];
-		if ( jQuery.isArray( value ) ) {
+		if ( Array.isArray( value ) ) {
 			easing = value[ 1 ];
 			value = props[ index ] = value[ 0 ];
 		}
@@ -7414,12 +7443,19 @@ function Animation( elem, properties, options ) {
 
 			deferred.notifyWith( elem, [ animation, percent, remaining ] );
 
+			// If there's more to do, yield
 			if ( percent < 1 && length ) {
 				return remaining;
-			} else {
-				deferred.resolveWith( elem, [ animation ] );
-				return false;
 			}
+
+			// If this was an empty animation, synthesize a final progress notification
+			if ( !length ) {
+				deferred.notifyWith( elem, [ animation, 1, 0 ] );
+			}
+
+			// Resolve the animation and report its conclusion
+			deferred.resolveWith( elem, [ animation ] );
+			return false;
 		},
 		animation = deferred.promise( {
 			elem: elem,
@@ -7484,6 +7520,13 @@ function Animation( elem, properties, options ) {
 		animation.opts.start.call( elem, animation );
 	}
 
+	// Attach callbacks from options
+	animation
+		.progress( animation.opts.progress )
+		.done( animation.opts.done, animation.opts.complete )
+		.fail( animation.opts.fail )
+		.always( animation.opts.always );
+
 	jQuery.fx.timer(
 		jQuery.extend( tick, {
 			elem: elem,
@@ -7492,11 +7535,7 @@ function Animation( elem, properties, options ) {
 		} )
 	);
 
-	// attach callbacks from options
-	return animation.progress( animation.opts.progress )
-		.done( animation.opts.done, animation.opts.complete )
-		.fail( animation.opts.fail )
-		.always( animation.opts.always );
+	return animation;
 }
 
 jQuery.Animation = jQuery.extend( Animation, {
@@ -7547,8 +7586,8 @@ jQuery.speed = function( speed, easing, fn ) {
 		easing: fn && easing || easing && !jQuery.isFunction( easing ) && easing
 	};
 
-	// Go to the end state if fx are off or if document is hidden
-	if ( jQuery.fx.off || document.hidden ) {
+	// Go to the end state if fx are off
+	if ( jQuery.fx.off ) {
 		opt.duration = 0;
 
 	} else {
@@ -7740,7 +7779,7 @@ jQuery.fx.tick = function() {
 	for ( ; i < timers.length; i++ ) {
 		timer = timers[ i ];
 
-		// Checks the timer has not already been removed
+		// Run the timer and safely remove it when done (allowing for external removal)
 		if ( !timer() && timers[ i ] === timer ) {
 			timers.splice( i--, 1 );
 		}
@@ -7754,30 +7793,21 @@ jQuery.fx.tick = function() {
 
 jQuery.fx.timer = function( timer ) {
 	jQuery.timers.push( timer );
-	if ( timer() ) {
-		jQuery.fx.start();
-	} else {
-		jQuery.timers.pop();
-	}
+	jQuery.fx.start();
 };
 
 jQuery.fx.interval = 13;
 jQuery.fx.start = function() {
-	if ( !timerId ) {
-		timerId = window.requestAnimationFrame ?
-			window.requestAnimationFrame( raf ) :
-			window.setInterval( jQuery.fx.tick, jQuery.fx.interval );
+	if ( inProgress ) {
+		return;
 	}
+
+	inProgress = true;
+	schedule();
 };
 
 jQuery.fx.stop = function() {
-	if ( window.cancelAnimationFrame ) {
-		window.cancelAnimationFrame( timerId );
-	} else {
-		window.clearInterval( timerId );
-	}
-
-	timerId = null;
+	inProgress = null;
 };
 
 jQuery.fx.speeds = {
@@ -7894,7 +7924,7 @@ jQuery.extend( {
 		type: {
 			set: function( elem, value ) {
 				if ( !support.radioValue && value === "radio" &&
-					jQuery.nodeName( elem, "input" ) ) {
+					nodeName( elem, "input" ) ) {
 					var val = elem.value;
 					elem.setAttribute( "type", value );
 					if ( val ) {
@@ -8325,7 +8355,7 @@ jQuery.fn.extend( {
 			} else if ( typeof val === "number" ) {
 				val += "";
 
-			} else if ( jQuery.isArray( val ) ) {
+			} else if ( Array.isArray( val ) ) {
 				val = jQuery.map( val, function( value ) {
 					return value == null ? "" : value + "";
 				} );
@@ -8384,7 +8414,7 @@ jQuery.extend( {
 							// Don't return options that are disabled or in a disabled optgroup
 							!option.disabled &&
 							( !option.parentNode.disabled ||
-								!jQuery.nodeName( option.parentNode, "optgroup" ) ) ) {
+								!nodeName( option.parentNode, "optgroup" ) ) ) {
 
 						// Get the specific value for the option
 						value = jQuery( option ).val();
@@ -8436,7 +8466,7 @@ jQuery.extend( {
 jQuery.each( [ "radio", "checkbox" ], function() {
 	jQuery.valHooks[ this ] = {
 		set: function( elem, value ) {
-			if ( jQuery.isArray( value ) ) {
+			if ( Array.isArray( value ) ) {
 				return ( elem.checked = jQuery.inArray( jQuery( elem ).val(), value ) > -1 );
 			}
 		}
@@ -8731,7 +8761,7 @@ var
 function buildParams( prefix, obj, traditional, add ) {
 	var name;
 
-	if ( jQuery.isArray( obj ) ) {
+	if ( Array.isArray( obj ) ) {
 
 		// Serialize array item.
 		jQuery.each( obj, function( i, v ) {
@@ -8783,7 +8813,7 @@ jQuery.param = function( a, traditional ) {
 		};
 
 	// If an array was passed in, assume that it is an array of form elements.
-	if ( jQuery.isArray( a ) || ( a.jquery && !jQuery.isPlainObject( a ) ) ) {
+	if ( Array.isArray( a ) || ( a.jquery && !jQuery.isPlainObject( a ) ) ) {
 
 		// Serialize the form elements
 		jQuery.each( a, function() {
@@ -8829,7 +8859,7 @@ jQuery.fn.extend( {
 				return null;
 			}
 
-			if ( jQuery.isArray( val ) ) {
+			if ( Array.isArray( val ) ) {
 				return jQuery.map( val, function( val ) {
 					return { name: elem.name, value: val.replace( rCRLF, "\r\n" ) };
 				} );
@@ -10254,13 +10284,6 @@ jQuery.expr.pseudos.animated = function( elem ) {
 
 
 
-/**
- * Gets a window from an element
- */
-function getWindow( elem ) {
-	return jQuery.isWindow( elem ) ? elem : elem.nodeType === 9 && elem.defaultView;
-}
-
 jQuery.offset = {
 	setOffset: function( elem, options, i ) {
 		var curPosition, curLeft, curCSSTop, curTop, curOffset, curCSSLeft, calculatePosition,
@@ -10325,13 +10348,14 @@ jQuery.fn.extend( {
 				} );
 		}
 
-		var docElem, win, rect, doc,
+		var doc, docElem, rect, win,
 			elem = this[ 0 ];
 
 		if ( !elem ) {
 			return;
 		}
 
+		// Return zeros for disconnected and hidden (display: none) elements (gh-2310)
 		// Support: IE <=11 only
 		// Running getBoundingClientRect on a
 		// disconnected node in IE throws an error
@@ -10341,20 +10365,14 @@ jQuery.fn.extend( {
 
 		rect = elem.getBoundingClientRect();
 
-		// Make sure element is not hidden (display: none)
-		if ( rect.width || rect.height ) {
-			doc = elem.ownerDocument;
-			win = getWindow( doc );
-			docElem = doc.documentElement;
+		doc = elem.ownerDocument;
+		docElem = doc.documentElement;
+		win = doc.defaultView;
 
-			return {
-				top: rect.top + win.pageYOffset - docElem.clientTop,
-				left: rect.left + win.pageXOffset - docElem.clientLeft
-			};
-		}
-
-		// Return zeros for disconnected and hidden elements (gh-2310)
-		return rect;
+		return {
+			top: rect.top + win.pageYOffset - docElem.clientTop,
+			left: rect.left + win.pageXOffset - docElem.clientLeft
+		};
 	},
 
 	position: function() {
@@ -10380,7 +10398,7 @@ jQuery.fn.extend( {
 
 			// Get correct offsets
 			offset = this.offset();
-			if ( !jQuery.nodeName( offsetParent[ 0 ], "html" ) ) {
+			if ( !nodeName( offsetParent[ 0 ], "html" ) ) {
 				parentOffset = offsetParent.offset();
 			}
 
@@ -10427,7 +10445,14 @@ jQuery.each( { scrollLeft: "pageXOffset", scrollTop: "pageYOffset" }, function( 
 
 	jQuery.fn[ method ] = function( val ) {
 		return access( this, function( elem, method, val ) {
-			var win = getWindow( elem );
+
+			// Coalesce documents and windows
+			var win;
+			if ( jQuery.isWindow( elem ) ) {
+				win = elem;
+			} else if ( elem.nodeType === 9 ) {
+				win = elem.defaultView;
+			}
 
 			if ( val === undefined ) {
 				return win ? win[ prop ] : elem[ method ];
@@ -10536,7 +10561,16 @@ jQuery.fn.extend( {
 	}
 } );
 
+jQuery.holdReady = function( hold ) {
+	if ( hold ) {
+		jQuery.readyWait++;
+	} else {
+		jQuery.ready( true );
+	}
+};
+jQuery.isArray = Array.isArray;
 jQuery.parseJSON = JSON.parse;
+jQuery.nodeName = nodeName;
 
 
 
@@ -10590,7 +10624,6 @@ jQuery.noConflict = function( deep ) {
 if ( !noGlobal ) {
 	window.jQuery = window.$ = jQuery;
 }
-
 
 
 
@@ -31976,7 +32009,7 @@ if (typeof jQuery === 'undefined') {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process, global) {/*!
- * Vue.js v2.2.4
+ * Vue.js v2.2.6
  * (c) 2014-2017 Evan You
  * Released under the MIT License.
  */
@@ -32552,11 +32585,13 @@ if (process.env.NODE_ENV !== 'production') {
     if (vm.$root === vm) {
       return '<Root>'
     }
-    var name = typeof vm === 'function' && vm.options
-      ? vm.options.name
-      : vm._isVue
-        ? vm.$options.name || vm.$options._componentTag
-        : vm.name;
+    var name = typeof vm === 'string'
+      ? vm
+      : typeof vm === 'function' && vm.options
+        ? vm.options.name
+        : vm._isVue
+          ? vm.$options.name || vm.$options._componentTag
+          : vm.name;
 
     var file = vm._isVue && vm.$options.__file;
     if (!name && file) {
@@ -32851,7 +32886,7 @@ function defineReactive$$1 (
  * already exist.
  */
 function set (target, key, val) {
-  if (Array.isArray(target)) {
+  if (Array.isArray(target) && typeof key === 'number') {
     target.length = Math.max(target.length, key);
     target.splice(key, 1, val);
     return val
@@ -32860,7 +32895,7 @@ function set (target, key, val) {
     target[key] = val;
     return val
   }
-  var ob = target.__ob__;
+  var ob = (target ).__ob__;
   if (target._isVue || (ob && ob.vmCount)) {
     process.env.NODE_ENV !== 'production' && warn(
       'Avoid adding reactive properties to a Vue instance or its root $data ' +
@@ -32881,11 +32916,11 @@ function set (target, key, val) {
  * Delete a property and trigger change if necessary.
  */
 function del (target, key) {
-  if (Array.isArray(target)) {
+  if (Array.isArray(target) && typeof key === 'number') {
     target.splice(key, 1);
     return
   }
-  var ob = target.__ob__;
+  var ob = (target ).__ob__;
   if (target._isVue || (ob && ob.vmCount)) {
     process.env.NODE_ENV !== 'production' && warn(
       'Avoid deleting properties on a Vue instance or its root $data ' +
@@ -33886,6 +33921,18 @@ function eventsMixin (Vue) {
 
   Vue.prototype.$emit = function (event) {
     var vm = this;
+    if (process.env.NODE_ENV !== 'production') {
+      var lowerCaseEvent = event.toLowerCase();
+      if (lowerCaseEvent !== event && vm._events[lowerCaseEvent]) {
+        tip(
+          "Event \"" + lowerCaseEvent + "\" is emitted in component " +
+          (formatComponentName(vm)) + " but the handler is registered for \"" + event + "\". " +
+          "Note that HTML attributes are case-insensitive and you cannot use " +
+          "v-on to listen to camelCase events when using in-DOM templates. " +
+          "You should probably use \"" + (hyphenate(event)) + "\" instead of \"" + event + "\"."
+        );
+      }
+    }
     var cbs = vm._events[event];
     if (cbs) {
       cbs = cbs.length > 1 ? toArray(cbs) : cbs;
@@ -34054,6 +34101,9 @@ function lifecycleMixin (Vue) {
     }
     // call the last hook...
     vm._isDestroyed = true;
+    // invoke destroy hooks on current rendered tree
+    vm.__patch__(vm._vnode, null);
+    // fire destroyed hook
     callHook(vm, 'destroyed');
     // turn off all instance listeners.
     vm.$off();
@@ -34061,8 +34111,8 @@ function lifecycleMixin (Vue) {
     if (vm.$el) {
       vm.$el.__vue__ = null;
     }
-    // invoke destroy hooks on current rendered tree
-    vm.__patch__(vm._vnode, null);
+    // remove reference to DOM nodes (prevents leak)
+    vm.$options._parentElm = vm.$options._refElm = null;
   };
 }
 
@@ -34306,10 +34356,14 @@ function flushSchedulerQueue () {
     }
   }
 
+  // reset scheduler before updated hook called
+  var oldQueue = queue.slice();
+  resetSchedulerState();
+
   // call updated hooks
-  index = queue.length;
+  index = oldQueue.length;
   while (index--) {
-    watcher = queue[index];
+    watcher = oldQueue[index];
     vm = watcher.vm;
     if (vm._watcher === watcher && vm._isMounted) {
       callHook(vm, 'updated');
@@ -34321,8 +34375,6 @@ function flushSchedulerQueue () {
   if (devtools && config.devtools) {
     devtools.emit('flush');
   }
-
-  resetSchedulerState();
 }
 
 /**
@@ -34679,7 +34731,7 @@ function initProps (vm, propsOptions) {
 function initData (vm) {
   var data = vm.$options.data;
   data = vm._data = typeof data === 'function'
-    ? data.call(vm)
+    ? getData(data, vm)
     : data || {};
   if (!isPlainObject(data)) {
     data = {};
@@ -34708,6 +34760,15 @@ function initData (vm) {
   observe(data, true /* asRootData */);
 }
 
+function getData (data, vm) {
+  try {
+    return data.call(vm)
+  } catch (e) {
+    handleError(e, vm, "data()");
+    return {}
+  }
+}
+
 var computedWatcherOptions = { lazy: true };
 
 function initComputed (vm, computed) {
@@ -34716,6 +34777,15 @@ function initComputed (vm, computed) {
   for (var key in computed) {
     var userDef = computed[key];
     var getter = typeof userDef === 'function' ? userDef : userDef.get;
+    if (process.env.NODE_ENV !== 'production') {
+      if (getter === undefined) {
+        warn(
+          ("No getter function has been defined for computed property \"" + key + "\"."),
+          vm
+        );
+        getter = noop;
+      }
+    }
     // create internal watcher for the computed property.
     watchers[key] = new Watcher(vm, getter, noop, computedWatcherOptions);
 
@@ -34964,7 +35034,7 @@ function createComponent (
   }
 
   // extract props
-  var propsData = extractProps(data, Ctor);
+  var propsData = extractProps(data, Ctor, tag);
 
   // functional component
   if (Ctor.options.functional) {
@@ -35105,7 +35175,7 @@ function resolveAsyncComponent (
   }
 }
 
-function extractProps (data, Ctor) {
+function extractProps (data, Ctor, tag) {
   // we are only extracting raw values here.
   // validation and default values are handled in the child
   // component itself.
@@ -35126,12 +35196,13 @@ function extractProps (data, Ctor) {
           key !== keyInLowerCase &&
           attrs && attrs.hasOwnProperty(keyInLowerCase)
         ) {
-          warn(
-            "Prop \"" + keyInLowerCase + "\" is not declared in component " +
-            (formatComponentName(Ctor)) + ". Note that HTML attributes are " +
-            "case-insensitive and camelCased props need to use their kebab-case " +
-            "equivalents when using in-DOM templates. You should probably use " +
-            "\"" + altKey + "\" instead of \"" + key + "\"."
+          tip(
+            "Prop \"" + keyInLowerCase + "\" is passed to component " +
+            (formatComponentName(tag || Ctor)) + ", but the declared prop name is" +
+            " \"" + key + "\". " +
+            "Note that HTML attributes are case-insensitive and camelCased " +
+            "props need to use their kebab-case equivalents when using in-DOM " +
+            "templates. You should probably use \"" + altKey + "\" instead of \"" + key + "\"."
           );
         }
       }
@@ -35617,18 +35688,32 @@ function initInjections (vm) {
         ? Reflect.ownKeys(inject)
         : Object.keys(inject);
 
-    for (var i = 0; i < keys.length; i++) {
+    var loop = function ( i ) {
       var key = keys[i];
       var provideKey = isArray ? key : inject[key];
       var source = vm;
       while (source) {
         if (source._provided && provideKey in source._provided) {
-          vm[key] = source._provided[provideKey];
+          /* istanbul ignore else */
+          if (process.env.NODE_ENV !== 'production') {
+            defineReactive$$1(vm, key, source._provided[provideKey], function () {
+              warn(
+                "Avoid mutating an injected value directly since the changes will be " +
+                "overwritten whenever the provided component re-renders. " +
+                "injection being mutated: \"" + key + "\"",
+                vm
+              );
+            });
+          } else {
+            defineReactive$$1(vm, key, source._provided[provideKey]);
+          }
           break
         }
         source = source.$parent;
       }
-    }
+    };
+
+    for (var i = 0; i < keys.length; i++) loop( i );
   }
 }
 
@@ -35638,14 +35723,18 @@ var uid = 0;
 
 function initMixin (Vue) {
   Vue.prototype._init = function (options) {
-    /* istanbul ignore if */
-    if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
-      mark('vue-perf-init');
-    }
-
     var vm = this;
     // a uid
     vm._uid = uid++;
+
+    var startTag, endTag;
+    /* istanbul ignore if */
+    if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+      startTag = "vue-perf-init:" + (vm._uid);
+      endTag = "vue-perf-end:" + (vm._uid);
+      mark(startTag);
+    }
+
     // a flag to avoid this being observed
     vm._isVue = true;
     // merge options
@@ -35681,8 +35770,8 @@ function initMixin (Vue) {
     /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
       vm._name = formatComponentName(vm, false);
-      mark('vue-perf-init-end');
-      measure(((vm._name) + " init"), 'vue-perf-init', 'vue-perf-init-end');
+      mark(endTag);
+      measure(((vm._name) + " init"), startTag, endTag);
     }
 
     if (vm.$options.el) {
@@ -36094,7 +36183,7 @@ Object.defineProperty(Vue$3.prototype, '$isServer', {
   get: isServerRendering
 });
 
-Vue$3.version = '2.2.4';
+Vue$3.version = '2.2.6';
 
 /*  */
 
@@ -36434,21 +36523,36 @@ var emptyNode = new VNode('', {}, []);
 
 var hooks = ['create', 'activate', 'update', 'remove', 'destroy'];
 
-function isUndef (s) {
-  return s == null
+function isUndef (v) {
+  return v === undefined || v === null
 }
 
-function isDef (s) {
-  return s != null
+function isDef (v) {
+  return v !== undefined && v !== null
 }
 
-function sameVnode (vnode1, vnode2) {
+function isTrue (v) {
+  return v === true
+}
+
+function sameVnode (a, b) {
   return (
-    vnode1.key === vnode2.key &&
-    vnode1.tag === vnode2.tag &&
-    vnode1.isComment === vnode2.isComment &&
-    !vnode1.data === !vnode2.data
+    a.key === b.key &&
+    a.tag === b.tag &&
+    a.isComment === b.isComment &&
+    isDef(a.data) === isDef(b.data) &&
+    sameInputType(a, b)
   )
+}
+
+// Some browsers do not support dynamically changing type for <input>
+// so they need to be treated as different nodes
+function sameInputType (a, b) {
+  if (a.tag !== 'input') { return true }
+  var i;
+  var typeA = isDef(i = a.data) && isDef(i = i.attrs) && i.type;
+  var typeB = isDef(i = b.data) && isDef(i = i.attrs) && i.type;
+  return typeA === typeB
 }
 
 function createKeyToOldIdx (children, beginIdx, endIdx) {
@@ -36471,7 +36575,9 @@ function createPatchFunction (backend) {
   for (i = 0; i < hooks.length; ++i) {
     cbs[hooks[i]] = [];
     for (j = 0; j < modules.length; ++j) {
-      if (modules[j][hooks[i]] !== undefined) { cbs[hooks[i]].push(modules[j][hooks[i]]); }
+      if (isDef(modules[j][hooks[i]])) {
+        cbs[hooks[i]].push(modules[j][hooks[i]]);
+      }
     }
   }
 
@@ -36492,7 +36598,7 @@ function createPatchFunction (backend) {
   function removeNode (el) {
     var parent = nodeOps.parentNode(el);
     // element may have already been removed due to v-html / v-text
-    if (parent) {
+    if (isDef(parent)) {
       nodeOps.removeChild(parent, el);
     }
   }
@@ -36543,7 +36649,7 @@ function createPatchFunction (backend) {
       if (process.env.NODE_ENV !== 'production' && data && data.pre) {
         inPre--;
       }
-    } else if (vnode.isComment) {
+    } else if (isTrue(vnode.isComment)) {
       vnode.elm = nodeOps.createComment(vnode.text);
       insert(parentElm, vnode.elm, refElm);
     } else {
@@ -36565,7 +36671,7 @@ function createPatchFunction (backend) {
       // in that case we can just return the element and be done.
       if (isDef(vnode.componentInstance)) {
         initComponent(vnode, insertedVnodeQueue);
-        if (isReactivated) {
+        if (isTrue(isReactivated)) {
           reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm);
         }
         return true
@@ -36574,7 +36680,7 @@ function createPatchFunction (backend) {
   }
 
   function initComponent (vnode, insertedVnodeQueue) {
-    if (vnode.data.pendingInsert) {
+    if (isDef(vnode.data.pendingInsert)) {
       insertedVnodeQueue.push.apply(insertedVnodeQueue, vnode.data.pendingInsert);
     }
     vnode.elm = vnode.componentInstance.$el;
@@ -36613,8 +36719,8 @@ function createPatchFunction (backend) {
   }
 
   function insert (parent, elm, ref) {
-    if (parent) {
-      if (ref) {
+    if (isDef(parent)) {
+      if (isDef(ref)) {
         nodeOps.insertBefore(parent, elm, ref);
       } else {
         nodeOps.appendChild(parent, elm);
@@ -36645,8 +36751,8 @@ function createPatchFunction (backend) {
     }
     i = vnode.data.hook; // Reuse variable
     if (isDef(i)) {
-      if (i.create) { i.create(emptyNode, vnode); }
-      if (i.insert) { insertedVnodeQueue.push(vnode); }
+      if (isDef(i.create)) { i.create(emptyNode, vnode); }
+      if (isDef(i.insert)) { insertedVnodeQueue.push(vnode); }
     }
   }
 
@@ -36705,15 +36811,15 @@ function createPatchFunction (backend) {
   }
 
   function removeAndInvokeRemoveHook (vnode, rm) {
-    if (rm || isDef(vnode.data)) {
+    if (isDef(rm) || isDef(vnode.data)) {
       var listeners = cbs.remove.length + 1;
-      if (!rm) {
-        // directly removing
-        rm = createRmCb(vnode.elm, listeners);
-      } else {
+      if (isDef(rm)) {
         // we have a recursively passed down rm callback
         // increase the listeners count
         rm.listeners += listeners;
+      } else {
+        // directly removing
+        rm = createRmCb(vnode.elm, listeners);
       }
       // recursively invoke hooks on child component root node
       if (isDef(i = vnode.componentInstance) && isDef(i = i._vnode) && isDef(i.data)) {
@@ -36815,24 +36921,23 @@ function createPatchFunction (backend) {
     // note we only do this if the vnode is cloned -
     // if the new node is not cloned it means the render functions have been
     // reset by the hot-reload-api and we need to do a proper re-render.
-    if (vnode.isStatic &&
-        oldVnode.isStatic &&
+    if (isTrue(vnode.isStatic) &&
+        isTrue(oldVnode.isStatic) &&
         vnode.key === oldVnode.key &&
-        (vnode.isCloned || vnode.isOnce)) {
+        (isTrue(vnode.isCloned) || isTrue(vnode.isOnce))) {
       vnode.elm = oldVnode.elm;
       vnode.componentInstance = oldVnode.componentInstance;
       return
     }
     var i;
     var data = vnode.data;
-    var hasData = isDef(data);
-    if (hasData && isDef(i = data.hook) && isDef(i = i.prepatch)) {
+    if (isDef(data) && isDef(i = data.hook) && isDef(i = i.prepatch)) {
       i(oldVnode, vnode);
     }
     var elm = vnode.elm = oldVnode.elm;
     var oldCh = oldVnode.children;
     var ch = vnode.children;
-    if (hasData && isPatchable(vnode)) {
+    if (isDef(data) && isPatchable(vnode)) {
       for (i = 0; i < cbs.update.length; ++i) { cbs.update[i](oldVnode, vnode); }
       if (isDef(i = data.hook) && isDef(i = i.update)) { i(oldVnode, vnode); }
     }
@@ -36850,7 +36955,7 @@ function createPatchFunction (backend) {
     } else if (oldVnode.text !== vnode.text) {
       nodeOps.setTextContent(elm, vnode.text);
     }
-    if (hasData) {
+    if (isDef(data)) {
       if (isDef(i = data.hook) && isDef(i = i.postpatch)) { i(oldVnode, vnode); }
     }
   }
@@ -36858,7 +36963,7 @@ function createPatchFunction (backend) {
   function invokeInsertHook (vnode, queue, initial) {
     // delay insert hooks for component root nodes, invoke them after the
     // element is really inserted
-    if (initial && vnode.parent) {
+    if (isTrue(initial) && isDef(vnode.parent)) {
       vnode.parent.data.pendingInsert = queue;
     } else {
       for (var i = 0; i < queue.length; ++i) {
@@ -36935,7 +37040,7 @@ function createPatchFunction (backend) {
   }
 
   function assertNodeMatch (node, vnode) {
-    if (vnode.tag) {
+    if (isDef(vnode.tag)) {
       return (
         vnode.tag.indexOf('vue-component') === 0 ||
         vnode.tag.toLowerCase() === (node.tagName && node.tagName.toLowerCase())
@@ -36946,15 +37051,15 @@ function createPatchFunction (backend) {
   }
 
   return function patch (oldVnode, vnode, hydrating, removeOnly, parentElm, refElm) {
-    if (!vnode) {
-      if (oldVnode) { invokeDestroyHook(oldVnode); }
+    if (isUndef(vnode)) {
+      if (isDef(oldVnode)) { invokeDestroyHook(oldVnode); }
       return
     }
 
     var isInitialPatch = false;
     var insertedVnodeQueue = [];
 
-    if (!oldVnode) {
+    if (isUndef(oldVnode)) {
       // empty mount (likely as component), create new root element
       isInitialPatch = true;
       createElm(vnode, insertedVnodeQueue, parentElm, refElm);
@@ -36972,7 +37077,7 @@ function createPatchFunction (backend) {
             oldVnode.removeAttribute('server-rendered');
             hydrating = true;
           }
-          if (hydrating) {
+          if (isTrue(hydrating)) {
             if (hydrate(oldVnode, vnode, insertedVnodeQueue)) {
               invokeInsertHook(vnode, insertedVnodeQueue, true);
               return oldVnode
@@ -37003,7 +37108,7 @@ function createPatchFunction (backend) {
           nodeOps.nextSibling(oldElm)
         );
 
-        if (vnode.parent) {
+        if (isDef(vnode.parent)) {
           // component root element replaced.
           // update parent placeholder node element, recursively
           var ancestor = vnode.parent;
@@ -37018,7 +37123,7 @@ function createPatchFunction (backend) {
           }
         }
 
-        if (parentElm$1 !== null) {
+        if (isDef(parentElm$1)) {
           removeVnodes(parentElm$1, [oldVnode], 0, 0);
         } else if (isDef(oldVnode.tag)) {
           invokeDestroyHook(oldVnode);
@@ -38624,7 +38729,7 @@ var model$1 = {
       if (isIE || isEdge) {
         setTimeout(cb, 0);
       }
-    } else if (vnode.tag === 'textarea' || el.type === 'text') {
+    } else if (vnode.tag === 'textarea' || el.type === 'text' || el.type === 'password') {
       el._vModifiers = binding.modifiers;
       if (!binding.modifiers.lazy) {
         if (!isAndroid) {
@@ -39294,6 +39399,7 @@ function parseHTML (html, options) {
   var stack = [];
   var expectHTML = options.expectHTML;
   var isUnaryTag$$1 = options.isUnaryTag || no;
+  var canBeLeftOpenTag$$1 = options.canBeLeftOpenTag || no;
   var index = 0;
   var last, lastTag;
   while (html) {
@@ -39442,7 +39548,7 @@ function parseHTML (html, options) {
       if (lastTag === 'p' && isNonPhrasingTag(tagName)) {
         parseEndTag(lastTag);
       }
-      if (canBeLeftOpenTag(tagName) && lastTag === tagName) {
+      if (canBeLeftOpenTag$$1(tagName) && lastTag === tagName) {
         parseEndTag(tagName);
       }
     }
@@ -39640,6 +39746,7 @@ function parse (
     warn: warn$2,
     expectHTML: options.expectHTML,
     isUnaryTag: options.isUnaryTag,
+    canBeLeftOpenTag: options.canBeLeftOpenTag,
     shouldDecodeNewlines: options.shouldDecodeNewlines,
     start: function start (tag, attrs, unary) {
       // check namespace.
@@ -41121,6 +41228,7 @@ var baseOptions = {
   isPreTag: isPreTag,
   isUnaryTag: isUnaryTag,
   mustUseProp: mustUseProp,
+  canBeLeftOpenTag: canBeLeftOpenTag,
   isReservedTag: isReservedTag,
   getTagNamespace: getTagNamespace,
   staticKeys: genStaticKeys(modules$1)
@@ -41252,742 +41360,198 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 35 */
+/* 35 */,
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(jQuery, $) {/**
+
+/**
  * First we will load all of this project's JavaScript dependencies which
- * include Vue and Vue Resource. This gives a great starting point for
+ * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
 
 __webpack_require__(30);
 
-/* globals AdminLTEOptions: false */
-/* globals FastClick: false */
-
-/*! AdminLTE app.js
- * ================
- * Main JS application file for AdminLTE v2. This file
- * should be included in all pages. It controls some layout
- * options and implements exclusive AdminLTE plugins.
- *
- * @Author  Almsaeed Studio
- * @Support <http://www.almsaeedstudio.com>
- * @Email   <support@almsaeedstudio.com>
- * @version 2.1.2
- * @license MIT <http://opensource.org/licenses/MIT>
+/**
+ * Next, we will create a fresh Vue application instance and attach it to
+ * the page. Then, you may begin adding components to this application
+ * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-'use strict';
+Vue.component('example', __webpack_require__(40));
 
-//Make sure jQuery has been loaded before app.js
-if (typeof jQuery === 'undefined') {
-    throw new Error('AdminLTE requires jQuery');
-}
-
-/* AdminLTE
- *
- * @type Object
- * @description $.AdminLTE is the main object for the template's app.
- *              It's used for implementing functions and options related
- *              to the template. Keeping everything wrapped in an object
- *              prevents conflict with other plugins and is a better
- *              way to organize our code.
- */
-$.AdminLTE = {};
-
-/* --------------------
- * - AdminLTE Options -
- * --------------------
- * Modify these options to suit your implementation
- */
-$.AdminLTE.options = {
-    //Add slimscroll to navbar menus
-    //This requires you to load the slimscroll plugin
-    //in every page before app.js
-    navbarMenuSlimscroll: true,
-    navbarMenuSlimscrollWidth: '3px', //The width of the scroll bar
-    navbarMenuHeight: '200px', //The height of the inner menu
-    //General animation speed for JS animated elements such as box collapse/expand and
-    //sidebar treeview slide up/down. This options accepts an integer as milliseconds,
-    //'fast', 'normal', or 'slow'
-    animationSpeed: 500,
-    //Sidebar push menu toggle button selector
-    sidebarToggleSelector: '[data-toggle="offcanvas"]',
-    //Activate sidebar push menu
-    sidebarPushMenu: true,
-    //Activate sidebar slimscroll if the fixed layout is set (requires SlimScroll Plugin)
-    sidebarSlimScroll: true,
-    //Enable sidebar expand on hover effect for sidebar mini
-    //This option is forced to true if both the fixed layout and sidebar mini
-    //are used together
-    sidebarExpandOnHover: false,
-    //BoxRefresh Plugin
-    enableBoxRefresh: true,
-    //Bootstrap.js tooltip
-    enableBSToppltip: true,
-    BSTooltipSelector: '[data-toggle="tooltip"]',
-    //Enable Fast Click. Fastclick.js creates a more
-    //native touch experience with touch devices. If you
-    //choose to enable the plugin, make sure you load the script
-    //before AdminLTE's app.js
-    enableFastclick: true,
-    //Control Sidebar Options
-    enableControlSidebar: true,
-    controlSidebarOptions: {
-        //Which button should trigger the open/close event
-        toggleBtnSelector: '[data-toggle="control-sidebar"]',
-        //The sidebar selector
-        selector: '.control-sidebar',
-        //Enable slide over content
-        slide: true
-    },
-    //Box Widget Plugin. Enable this plugin
-    //to allow boxes to be collapsed and/or removed
-    enableBoxWidget: true,
-    //Box Widget plugin options
-    boxWidgetOptions: {
-        boxWidgetIcons: {
-            //Collapse icon
-            collapse: 'fa-minus',
-            //Open icon
-            open: 'fa-plus',
-            //Remove icon
-            remove: 'fa-times'
-        },
-        boxWidgetSelectors: {
-            //Remove button selector
-            remove: '[data-widget="remove"]',
-            //Collapse button selector
-            collapse: '[data-widget="collapse"]'
-        }
-    },
-    //Direct Chat plugin options
-    directChat: {
-        //Enable direct chat by default
-        enable: true,
-        //The button to open and close the chat contacts pane
-        contactToggleSelector: '[data-widget="chat-pane-toggle"]'
-    },
-    //Define the set of colors to use globally around the website
-    colors: {
-        lightBlue: '#3c8dbc',
-        red: '#f56954',
-        green: '#00a65a',
-        aqua: '#00c0ef',
-        yellow: '#f39c12',
-        blue: '#0073b7',
-        navy: '#001F3F',
-        teal: '#39CCCC',
-        olive: '#3D9970',
-        lime: '#01FF70',
-        orange: '#FF851B',
-        fuchsia: '#F012BE',
-        purple: '#8E24AA',
-        maroon: '#D81B60',
-        black: '#222222',
-        gray: '#d2d6de'
-    },
-    //The standard screen sizes that bootstrap uses.
-    //If you change these in the variables.less file, change
-    //them here too.
-    screenSizes: {
-        xs: 480,
-        sm: 768,
-        md: 992,
-        lg: 1200
-    }
-};
-
-/* ------------------
- * - Implementation -
- * ------------------
- * The next block of code implements AdminLTE's
- * functions and plugins as specified by the
- * options above.
- */
-$(function () {
-    //Extend options if external options exist
-    if (typeof AdminLTEOptions !== 'undefined') {
-        $.extend(true, $.AdminLTE.options, AdminLTEOptions);
-    }
-
-    //Easy access to options
-    var o = $.AdminLTE.options;
-
-    //Set up the object
-    _init();
-
-    //Activate the layout maker
-    $.AdminLTE.layout.activate();
-
-    //Enable sidebar tree view controls
-    $.AdminLTE.tree('.sidebar');
-
-    //Enable control sidebar
-    if (o.enableControlSidebar) {
-        $.AdminLTE.controlSidebar.activate();
-    }
-
-    //Add slimscroll to navbar dropdown
-    if (o.navbarMenuSlimscroll && typeof $.fn.slimscroll !== 'undefined') {
-        $('.navbar .menu').slimscroll({
-            height: o.navbarMenuHeight,
-            alwaysVisible: false,
-            size: o.navbarMenuSlimscrollWidth
-        }).css('width', '100%');
-    }
-
-    //Activate sidebar push menu
-    if (o.sidebarPushMenu) {
-        $.AdminLTE.pushMenu.activate(o.sidebarToggleSelector);
-    }
-
-    //Activate Bootstrap tooltip
-    if (o.enableBSToppltip) {
-        $('body').tooltip({
-            selector: o.BSTooltipSelector
-        });
-    }
-
-    //Activate box widget
-    if (o.enableBoxWidget) {
-        $.AdminLTE.boxWidget.activate();
-    }
-
-    //Activate fast click
-    if (o.enableFastclick && typeof FastClick !== 'undefined') {
-        FastClick.attach(document.body);
-    }
-
-    //Activate direct chat widget
-    if (o.directChat.enable) {
-        $(o.directChat.contactToggleSelector).on('click', function () {
-            var box = $(this).parents('.direct-chat').first();
-            box.toggleClass('direct-chat-contacts-open');
-        });
-    }
-
-    /*
-     * INITIALIZE BUTTON TOGGLE
-     * ------------------------
-     */
-    $('.btn-group[data-toggle="btn-toggle"]').each(function () {
-        var group = $(this);
-        $(this).find('.btn').on('click', function (e) {
-            group.find('.btn.active').removeClass('active');
-            $(this).addClass('active');
-            e.preventDefault();
-        });
-    });
+var app = new Vue({
+  el: '#app'
 });
 
-/* ----------------------------------
- * - Initialize the AdminLTE Object -
- * ----------------------------------
- * All AdminLTE functions are implemented below.
- */
-function _init() {
+/***/ }),
+/* 37 */
+/***/ (function(module, exports) {
 
-    /* Layout
-     * ======
-     * Fixes the layout height in case min-height fails.
-     *
-     * @type Object
-     * @usage $.AdminLTE.layout.activate()
-     *        $.AdminLTE.layout.fix()
-     *        $.AdminLTE.layout.fixSidebar()
-     */
-    $.AdminLTE.layout = {
-        activate: function activate() {
-            var _this = this;
-            _this.fix();
-            _this.fixSidebar();
-            $(window, '.wrapper').resize(function () {
-                _this.fix();
-                _this.fixSidebar();
-            });
-        },
-        fix: function fix() {
-            //Get window height and the wrapper height
-            var neg = $('.main-header').outerHeight() + $('.main-footer').outerHeight();
-            var windowHeight = $(window).height();
-            var sidebarHeight = $('.sidebar').height();
-            //Set the min-height of the content and sidebar based on the
-            //the height of the document.
-            if ($('body').hasClass('fixed')) {
-                $('.content-wrapper, .right-side').css('min-height', windowHeight - $('.main-footer').outerHeight());
-            } else {
-                var postSetWidth;
-                if (windowHeight >= sidebarHeight) {
-                    $('.content-wrapper, .right-side').css('min-height', windowHeight - neg);
-                    postSetWidth = windowHeight - neg;
-                } else {
-                    $('.content-wrapper, .right-side').css('min-height', sidebarHeight);
-                    postSetWidth = sidebarHeight;
-                }
-
-                //Fix for the control sidebar height
-                var controlSidebar = $($.AdminLTE.options.controlSidebarOptions.selector);
-                if (typeof controlSidebar !== 'undefined') {
-                    if (controlSidebar.height() > postSetWidth) {
-                        $('.content-wrapper, .right-side').css('min-height', controlSidebar.height());
-                    }
-                }
-            }
-        },
-        fixSidebar: function fixSidebar() {
-            //Make sure the body tag has the .fixed class
-            if (!$('body').hasClass('fixed')) {
-                if (typeof $.fn.slimScroll !== 'undefined') {
-                    $('.sidebar').slimScroll({ destroy: true }).height('auto');
-                }
-                return;
-            } else if (typeof $.fn.slimScroll === 'undefined' && console) {
-                console.error('Error: the fixed layout requires the slimscroll plugin!');
-            }
-            //Enable slimscroll for fixed layout
-            if ($.AdminLTE.options.sidebarSlimScroll) {
-                if (typeof $.fn.slimScroll !== 'undefined') {
-                    //Destroy if it exists
-                    $('.sidebar').slimScroll({ destroy: true }).height('auto');
-                    //Add slimscroll
-                    $('.sidebar').slimscroll({
-                        height: $(window).height() - $('.main-header').height() + 'px',
-                        color: 'rgba(0,0,0,0.2)',
-                        size: '3px'
-                    });
-                }
-            }
-        }
-    };
-
-    /* PushMenu()
-     * ==========
-     * Adds the push menu functionality to the sidebar.
-     *
-     * @type Function
-     * @usage: $.AdminLTE.pushMenu("[data-toggle='offcanvas']")
-     */
-    $.AdminLTE.pushMenu = {
-        activate: function activate(toggleBtn) {
-            //Get the screen sizes
-            var screenSizes = $.AdminLTE.options.screenSizes;
-
-            //Enable sidebar toggle
-            $(toggleBtn).on('click', function (e) {
-                e.preventDefault();
-
-                //Enable sidebar push menu
-                if ($(window).width() > screenSizes.sm - 1) {
-                    $('body').toggleClass('sidebar-collapse');
-                }
-                //Handle sidebar push menu for small screens
-                else {
-                        if ($('body').hasClass('sidebar-open')) {
-                            $('body').removeClass('sidebar-open');
-                            $('body').removeClass('sidebar-collapse');
-                        } else {
-                            $('body').addClass('sidebar-open');
-                        }
-                    }
-            });
-
-            $('.content-wrapper').click(function () {
-                //Enable hide menu when clicking on the content-wrapper on small screens
-                if ($(window).width() <= screenSizes.sm - 1 && $('body').hasClass('sidebar-open')) {
-                    $('body').removeClass('sidebar-open');
-                }
-            });
-
-            //Enable expand on hover for sidebar mini
-            if ($.AdminLTE.options.sidebarExpandOnHover || $('body').hasClass('fixed') && $('body').hasClass('sidebar-mini')) {
-                this.expandOnHover();
-            }
-        },
-        expandOnHover: function expandOnHover() {
-            var _this = this;
-            var screenWidth = $.AdminLTE.options.screenSizes.sm - 1;
-            //Expand sidebar on hover
-            $('.main-sidebar').hover(function () {
-                if ($('body').hasClass('sidebar-mini') && $('body').hasClass('sidebar-collapse') && $(window).width() > screenWidth) {
-                    _this.expand();
-                }
-            }, function () {
-                if ($('body').hasClass('sidebar-mini') && $('body').hasClass('sidebar-expanded-on-hover') && $(window).width() > screenWidth) {
-                    _this.collapse();
-                }
-            });
-        },
-        expand: function expand() {
-            $('body').removeClass('sidebar-collapse').addClass('sidebar-expanded-on-hover');
-        },
-        collapse: function collapse() {
-            if ($('body').hasClass('sidebar-expanded-on-hover')) {
-                $('body').removeClass('sidebar-expanded-on-hover').addClass('sidebar-collapse');
-            }
-        }
-    };
-
-    /* Tree()
-     * ======
-     * Converts the sidebar into a multilevel
-     * tree view menu.
-     *
-     * @type Function
-     * @Usage: $.AdminLTE.tree('.sidebar')
-     */
-    $.AdminLTE.tree = function (menu) {
-        var _this = this;
-        var animationSpeed = $.AdminLTE.options.animationSpeed;
-        $('li a', $(menu)).on('click', function (e) {
-            //Get the clicked link and the next element
-            var $this = $(this);
-            var checkElement = $this.next();
-
-            //Check if the next element is a menu and is visible
-            if (checkElement.is('.treeview-menu') && checkElement.is(':visible')) {
-                //Close the menu
-                checkElement.slideUp(animationSpeed, function () {
-                    checkElement.removeClass('menu-open');
-                    //Fix the layout in case the sidebar stretches over the height of the window
-                    //_this.layout.fix();
-                });
-                checkElement.parent('li').removeClass('active');
-            }
-            //If the menu is not visible
-            else if (checkElement.is('.treeview-menu') && !checkElement.is(':visible')) {
-                    //Get the parent menu
-                    var parent = $this.parents('ul').first();
-                    //Close all open menus within the parent
-                    var ul = parent.find('ul:visible').slideUp(animationSpeed);
-                    //Remove the menu-open class from the parent
-                    ul.removeClass('menu-open');
-                    //Get the parent li
-                    var liParent = $this.parent('li');
-
-                    //Open the target menu and add the menu-open class
-                    checkElement.slideDown(animationSpeed, function () {
-                        //Add the class active to the parent li
-                        checkElement.addClass('menu-open');
-                        parent.find('li.active').removeClass('active');
-                        liParent.addClass('active');
-                        //Fix the layout in case the sidebar stretches over the height of the window
-                        _this.layout.fix();
-                    });
-                }
-            //if this isn't a link, prevent the page from being redirected
-            if (checkElement.is('.treeview-menu')) {
-                e.preventDefault();
-            }
-        });
-    };
-
-    /* ControlSidebar
-     * ==============
-     * Adds functionality to the right sidebar
-     *
-     * @type Object
-     * @usage $.AdminLTE.controlSidebar.activate(options)
-     */
-    $.AdminLTE.controlSidebar = {
-        //instantiate the object
-        activate: function activate() {
-            //Get the object
-            var _this = this;
-            //Update options
-            var o = $.AdminLTE.options.controlSidebarOptions;
-            //Get the sidebar
-            var sidebar = $(o.selector);
-            //The toggle button
-            var btn = $(o.toggleBtnSelector);
-
-            //Listen to the click event
-            btn.on('click', function (e) {
-                e.preventDefault();
-                //If the sidebar is not open
-                if (!sidebar.hasClass('control-sidebar-open') && !$('body').hasClass('control-sidebar-open')) {
-                    //Open the sidebar
-                    _this.open(sidebar, o.slide);
-                } else {
-                    _this.close(sidebar, o.slide);
-                }
-            });
-
-            //If the body has a boxed layout, fix the sidebar bg position
-            var bg = $('.control-sidebar-bg');
-            _this._fix(bg);
-
-            //If the body has a fixed layout, make the control sidebar fixed
-            if ($('body').hasClass('fixed')) {
-                _this._fixForFixed(sidebar);
-            } else {
-                //If the content height is less than the sidebar's height, force max height
-                if ($('.content-wrapper, .right-side').height() < sidebar.height()) {
-                    _this._fixForContent(sidebar);
-                }
-            }
-        },
-        //Open the control sidebar
-        open: function open(sidebar, slide) {
-            // var _this = this;
-            //Slide over content
-            if (slide) {
-                sidebar.addClass('control-sidebar-open');
-            } else {
-                //Push the content by adding the open class to the body instead
-                //of the sidebar itself
-                $('body').addClass('control-sidebar-open');
-            }
-        },
-        //Close the control sidebar
-        close: function close(sidebar, slide) {
-            if (slide) {
-                sidebar.removeClass('control-sidebar-open');
-            } else {
-                $('body').removeClass('control-sidebar-open');
-            }
-        },
-        _fix: function _fix(sidebar) {
-            var _this = this;
-            if ($('body').hasClass('layout-boxed')) {
-                sidebar.css('position', 'absolute');
-                sidebar.height($('.wrapper').height());
-                $(window).resize(function () {
-                    _this._fix(sidebar);
-                });
-            } else {
-                sidebar.css({
-                    'position': 'fixed',
-                    'height': 'auto'
-                });
-            }
-        },
-        _fixForFixed: function _fixForFixed(sidebar) {
-            sidebar.css({
-                'position': 'fixed',
-                'max-height': '100%',
-                'overflow': 'auto',
-                'padding-bottom': '50px'
-            });
-        },
-        _fixForContent: function _fixForContent(sidebar) {
-            $('.content-wrapper, .right-side').css('min-height', sidebar.height());
-        }
-    };
-
-    /* BoxWidget
-     * =========
-     * BoxWidget is a plugin to handle collapsing and
-     * removing boxes from the screen.
-     *
-     * @type Object
-     * @usage $.AdminLTE.boxWidget.activate()
-     *        Set all your options in the main $.AdminLTE.options object
-     */
-    $.AdminLTE.boxWidget = {
-        selectors: $.AdminLTE.options.boxWidgetOptions.boxWidgetSelectors,
-        icons: $.AdminLTE.options.boxWidgetOptions.boxWidgetIcons,
-        animationSpeed: $.AdminLTE.options.animationSpeed,
-        activate: function activate(_box) {
-            var _this = this;
-            if (!_box) {
-                _box = document; // activate all boxes per default
-            }
-            //Listen for collapse event triggers
-            $(_box).find(_this.selectors.collapse).on('click', function (e) {
-                e.preventDefault();
-                _this.collapse($(this));
-            });
-
-            //Listen for remove event triggers
-            $(_box).find(_this.selectors.remove).on('click', function (e) {
-                e.preventDefault();
-                _this.remove($(this));
-            });
-        },
-        collapse: function collapse(element) {
-            var _this = this;
-            //Find the box parent
-            var box = element.parents('.box').first();
-            //Find the body and the footer
-            var boxContent = box.find('> .box-body, > .box-footer');
-            if (!box.hasClass('collapsed-box')) {
-                //Convert minus into plus
-                element.children(':first').removeClass(_this.icons.collapse).addClass(_this.icons.open);
-                //Hide the content
-                boxContent.slideUp(_this.animationSpeed, function () {
-                    box.addClass('collapsed-box');
-                });
-            } else {
-                //Convert plus into minus
-                element.children(':first').removeClass(_this.icons.open).addClass(_this.icons.collapse);
-                //Show the content
-                boxContent.slideDown(_this.animationSpeed, function () {
-                    box.removeClass('collapsed-box');
-                });
-            }
-        },
-        remove: function remove(element) {
-            //Find the box parent
-            var box = element.parents('.box').first();
-            box.slideUp(this.animationSpeed);
-        }
-    };
-}
-
-/* ------------------
- * - Custom Plugins -
- * ------------------
- * All custom plugins are defined below.
- */
-
-/*
- * BOX REFRESH BUTTON
- * ------------------
- * This is a custom plugin to use with the component BOX. It allows you to add
- * a refresh button to the box. It converts the box's state to a loading state.
- *
- * @type plugin
- * @usage $('#box-widget').boxRefresh( options );
- */
-(function ($) {
-
-    $.fn.boxRefresh = function (options) {
-
-        // Render options
-        var settings = $.extend({
-            //Refresh button selector
-            trigger: '.refresh-btn',
-            //File source to be loaded (e.g: ajax/src.php)
-            source: '',
-            //Callbacks
-            onLoadStart: function onLoadStart(box) {}, //Right after the button has been clicked
-            onLoadDone: function onLoadDone(box) {} //When the source has been loaded
-
-        }, options);
-
-        //The overlay
-        var overlay = $('<div class="overlay"><div class="fa fa-refresh fa-spin"></div></div>');
-
-        return this.each(function () {
-            //if a source is specified
-            if (settings.source === '') {
-                if (console) {
-                    console.log('Please specify a source first - boxRefresh()');
-                }
-                return;
-            }
-            //the box
-            var box = $(this);
-            //the button
-            var rBtn = box.find(settings.trigger).first();
-
-            //On trigger click
-            rBtn.on('click', function (e) {
-                e.preventDefault();
-                //Add loading overlay
-                start(box);
-
-                //Perform ajax call
-                box.find('.box-body').load(settings.source, function () {
-                    done(box);
-                });
-            });
-        });
-
-        function start(box) {
-            //Add overlay and loading img
-            box.append(overlay);
-
-            settings.onLoadStart.call(box);
-        }
-
-        function done(box) {
-            //Remove overlay and loading img
-            box.find(overlay).remove();
-
-            settings.onLoadDone.call(box);
-        }
-    };
-})(jQuery);
-
-/*
- * EXPLICIT BOX ACTIVATION
- * -----------------------
- * This is a custom plugin to use with the component BOX. It allows you to activate
- * a box inserted in the DOM after the app.js was loaded.
- *
- * @type plugin
- * @usage $('#box-widget').activateBox();
- */
-(function ($) {
-
-    $.fn.activateBox = function () {
-        $.AdminLTE.boxWidget.activate(this);
-    };
-})(jQuery);
-
-/*
- * TODO LIST CUSTOM PLUGIN
- * -----------------------
- * This plugin depends on iCheck plugin for checkbox and radio inputs
- *
- * @type plugin
- * @usage $('#todo-widget').todolist( options );
- */
-(function ($) {
-
-    $.fn.todolist = function (options) {
-        // Render options
-        var settings = $.extend({
-            //When the user checks the input
-            onCheck: function onCheck(ele) {},
-            //When the user unchecks the input
-            onUncheck: function onUncheck(ele) {}
-        }, options);
-
-        return this.each(function () {
-
-            if (typeof $.fn.iCheck !== 'undefined') {
-                $('input', this).on('ifChecked', function (event) {
-                    var ele = $(this).parents('li').first();
-                    ele.toggleClass('done');
-                    settings.onCheck.call(ele);
-                });
-
-                $('input', this).on('ifUnchecked', function (event) {
-                    var ele = $(this).parents('li').first();
-                    ele.toggleClass('done');
-                    settings.onUncheck.call(ele);
-                });
-            } else {
-                $('input', this).on('change', function (event) {
-                    var ele = $(this).parents('li').first();
-                    ele.toggleClass('done');
-                    settings.onCheck.call(ele);
-                });
-            }
-        });
-    };
-})(jQuery);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(1)))
+// removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 36 */,
-/* 37 */,
-/* 38 */,
-/* 39 */,
-/* 40 */,
-/* 41 */,
-/* 42 */,
-/* 43 */
+/* 38 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 39 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    mounted: function mounted() {
+        console.log('Component mounted.');
+    }
+});
+
+/***/ }),
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(35);
+var Component = __webpack_require__(41)(
+  /* script */
+  __webpack_require__(39),
+  /* template */
+  __webpack_require__(42),
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+Component.options.__file = "O:\\www\\waterwork\\resources\\assets\\js\\components\\frontend\\Example.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] Example.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-c0f19d06", Component.options)
+  } else {
+    hotAPI.reload("data-v-c0f19d06", Component.options)
+  }
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports) {
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  scopeId,
+  cssModules
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  // inject cssModules
+  if (cssModules) {
+    var computed = options.computed || (options.computed = {})
+    Object.keys(cssModules).forEach(function (key) {
+      var module = cssModules[key]
+      computed[key] = function () { return module }
+    })
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _vm._m(0)
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "container"
+  }, [_c('div', {
+    staticClass: "row"
+  }, [_c('div', {
+    staticClass: "col-xs-12"
+  }, [_c('div', {
+    staticClass: "panel panel-default"
+  }, [_c('div', {
+    staticClass: "panel-heading"
+  }, [_vm._v("Example Component")]), _vm._v(" "), _c('div', {
+    staticClass: "panel-body"
+  }, [_vm._v("\n                    I'm an example component!\n                ")])])])])])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-c0f19d06", module.exports)
+  }
+}
+
+/***/ }),
+/* 43 */,
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(36);
 __webpack_require__(10);
-module.exports = __webpack_require__(11);
+__webpack_require__(11);
+__webpack_require__(37);
+module.exports = __webpack_require__(38);
 
 
 /***/ })
