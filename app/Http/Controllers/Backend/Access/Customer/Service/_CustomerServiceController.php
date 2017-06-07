@@ -85,7 +85,7 @@ class CustomerServiceController extends Controller
     public function destroy(CustomerService $customerService, ManageCustomerServiceRequest $request)
     {
         $this->services->delete($customerService);
-
+        
         return redirect()->route('admin.access.customer.index')->withFlashSuccess(trans('alerts.backend.customers.service.deleted'));
     }
 }

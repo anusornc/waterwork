@@ -29,12 +29,36 @@ trait CustomerServiceAttribute
         
     }
 
+    public function getPrintFormButtonAttribute(){
+        return '<a href="'.route('admin.access.customer.service.print', [$this->customer_id,$this]).
+                    '" class="btn btn-xs btn-info" target="_blank">
+                    <i class="fa fa-print" 
+                        data-toggle="tooltip" 
+                        data-placement="top" 
+                        title="'.trans('buttons.general.crud.print').'">
+                    </i>
+                </a> ';
+    }
+    
+    public function getViewFormButtonAttribute(){
+        return '<a href="'.route('admin.access.customer.service.viewform', [$this->customer_id,$this]).
+                    '" class="btn btn-xs btn-info" target="_blank">
+                    <i class="fa fa-file-text" 
+                        data-toggle="tooltip" 
+                        data-placement="top" 
+                        title="'.trans('buttons.general.crud.viewform').'">
+                    </i>
+                </a> ';
+    }
+
     /**
      * @return string
      */
     public function getActionButtonsAttribute()
     {
         return $this->getEditButtonAttribute().
-        $this->getDeleteButtonAttribute();
+        $this->getDeleteButtonAttribute().
+        $this->getPrintFormButtonAttribute().
+        $this->getViewFormButtonAttribute();
     }
 }

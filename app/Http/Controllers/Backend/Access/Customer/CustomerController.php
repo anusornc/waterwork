@@ -98,6 +98,24 @@ class CustomerController extends Controller
             ->withSys($s->all());
     }
 
+    public function servicePrint(Customer $customer,ManageCustomerRequest $request,CustomerService $service,Sys $sys) {
+        $system = $sys->all();
+        $view = \View::make('backend.access.customers.services.pdfview',['customer'=>$customer,'sys'=>$system,'service'=>$service])->render();
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML($view);
+        return $pdf->stream('form-customer-service-register.pdf');
+
+    }
+
+    public function serviceViewform(Customer $customer, CustomerService $service, ManageCustomerRequest $request,Sys $s) {
+        return view('backend.access.customers.services.pdfview')
+            ->withCustomer($customer)
+            ->withService($service)
+            ->withServiceCount($this->services->getCount())
+            ->withServiceStatus($this->status->getAll())
+            ->withSys($s->all());
+    }
+
     public function serviceCreate(Customer $customer,ManageCustomerServiceRequest $request)
     {
         return view('backend.access.customers.services.create')
