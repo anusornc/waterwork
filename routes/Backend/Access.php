@@ -115,6 +115,8 @@ Route::group([
                 Route::patch('/service/{service}','CustomerController@serviceUpdate')->name('service.update');
                 Route::get('/service/{service}/edit','CustomerController@serviceEdit')->name('service.edit');
                 Route::post('/services','CustomerController@serviceStore')->name('service.store');
+                Route::get('/service/{service}/print','CustomerController@servicePrint')->name('service.print');
+                Route::get('/service/{service}/viewform','CustomerController@serviceViewForm')->name('service.viewform');
             });
             //For DataTables
             Route::group(['namespace' => 'Service', 'as' => 'customer.'],function() {

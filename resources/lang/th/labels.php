@@ -40,7 +40,7 @@ return [
 
                 'table' => [
                     'citizen'   => 'เลขที่บัตรประชาชน',
-                    'firstname' => 'ชื่อ',
+                    'firstname' => 'ชื่อ(เจ้าบ้าน)',
                     'lastname'  => 'นามสกุล',
                     'services' => 'จำนวนที่ติดตั้งไป',
                 ],
